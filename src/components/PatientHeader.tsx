@@ -17,7 +17,7 @@ interface PatientHeaderProps {
 
 export default function PatientHeader({ patient }: PatientHeaderProps) {
   return (
-    <div className="flex items-center p-5 bg-white dark:bg-[#2E3A4A] rounded-lg shadow-sm mb-6 transition-all duration-300 border-l-4 border-blue-500 dark:border-blue-400 hover:shadow-md hover:-translate-y-0.5">
+    <div className="flex items-center p-5 bg-white dark:bg-[#2E3A4A] rounded-lg shadow-sm mb-6 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
       <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-[#242F3F] mr-4 flex items-center justify-center text-blue-500 dark:text-blue-400 text-2xl transition-transform duration-200 flex-shrink-0 hover:scale-105">
         {/* --- USA EL ICONO IMPORTADO --- */}
         {/* Elige cuál icono quieres mostrar. Por ejemplo, faUser: */}
@@ -36,8 +36,8 @@ export default function PatientHeader({ patient }: PatientHeaderProps) {
         </div>
       </div>
 
-      <div className="flex gap-5 ml-auto flex-wrap">
-        <div className="text-center transition-all duration-200 p-2 rounded-md hover:bg-blue-500/5 flex-grow min-w-[100px]">
+      <div className="flex flex-col sm:flex-row sm:gap-5 gap-3 sm:ml-auto items-start sm:items-center sm:flex-wrap">
+        <div className="text-left sm:text-center transition-all duration-200 p-2 rounded-md hover:bg-blue-500/5 flex-grow min-w-[90px]">
           <div className="text-xs text-gray-500 dark:text-[#B8C4CF] mb-1">
             Biological Age
           </div>
@@ -51,7 +51,7 @@ export default function PatientHeader({ patient }: PatientHeaderProps) {
           </div>
         </div>
 
-        <div className="text-center transition-all duration-200 p-2 rounded-md hover:bg-blue-500/5 flex-grow min-w-[100px]">
+        <div className="text-left sm:text-center transition-all duration-200 p-2 rounded-md hover:bg-blue-500/5 flex-grow min-w-[90px]">
           <div className="text-xs text-gray-500 dark:text-[#B8C4CF] mb-1">
             Health Score
           </div>
@@ -60,7 +60,7 @@ export default function PatientHeader({ patient }: PatientHeaderProps) {
           </div>
         </div>
 
-        <div className="text-center transition-all duration-200 p-2 rounded-md hover:bg-blue-500/5 flex-grow min-w-[100px]">
+        <div className="text-left sm:text-center transition-all duration-200 p-2 rounded-md hover:bg-blue-500/5 flex-grow min-w-[90px]">
           <div className="text-xs text-gray-500 dark:text-[#B8C4CF] mb-1">
             Last Checkup
           </div>
