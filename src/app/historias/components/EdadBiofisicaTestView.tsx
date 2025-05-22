@@ -1,43 +1,39 @@
 'use client';
 
-import React, { useState } from 'react';
-import BiofisicaForm from './BiofisicaForm';
-import BiofisicaCharts from './BiofisicaCharts';
-import { BiofisicaFormData } from '@/app/historias/types/biofisica';
+import React from 'react';
+import EdadBiofisicaForm from './EdadBiofisica/EdadBiofisicaForm';
+import { BiofisicaFormData } from '../types/biofisica';
 
 interface EdadBiofisicaTestViewProps {
   patientId: string;
+  initialCronoAge?: number;
   onBack: () => void;
-  initialCronoAge: number;
 }
 
-export default function EdadBiofisicaTestView({ patientId, onBack, initialCronoAge }: EdadBiofisicaTestViewProps) {
-  const [currentFormData, setCurrentFormData] = useState<BiofisicaFormData>({
-    formType: null,
-    fields: [],
-    chronological: initialCronoAge,
-    biological: null,
-    differential: null,
-  });
-
-  const handleDataCalculated = (data: BiofisicaFormData) => {
-    setCurrentFormData(data);
+export default function EdadBiofisicaTestView({ 
+  patientId, 
+  initialCronoAge,
+  onBack 
+}: EdadBiofisicaTestViewProps) {
+  
+  const handleSaveTest = async (data: BiofisicaFormData) => {
+    // Aquí se implementaría la lógica para guardar en el backend
+    console.log('Guardando test de edad biofísica:', data);
+    
+    // Simulación de guardado
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    return Promise.resolve();
   };
-
-  const handleSaveData = async (data: BiofisicaFormData) => {
-    console.log('EdadBiofisicaTestView - handleSaveData:', data, 'para paciente ID:', patientId);
-    alert('Datos guardados (simulación)');
-  };
-
+  
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4">
-      <BiofisicaForm
-        onDataCalculated={handleDataCalculated}
-        onSave={handleSaveData}
-        onBack={onBack}
+    <div className="w-full">
+      <EdadBiofisicaForm 
+        patientId={patientId}
         initialCronoAge={initialCronoAge}
+        onSave={handleSaveTest}
+        onBack={onBack}
       />
-      <BiofisicaCharts fields={currentFormData.fields} />
     </div>
   );
 }

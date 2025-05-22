@@ -1,27 +1,31 @@
+// Tipos para el cálculo de edad biofísica
+
 export interface BiofisicaField {
   name: string;
   translate: string;
   dimensions: boolean;
-  relative_value: string | number;
+  relative_value: string | number | null;
   absolute_value: number | null;
-  high: string | number;
-  long: string | number;
-  width: string | number;
+  high: string | number | null;
+  long: string | number | null;
+  width: string | number | null;
 }
 
-export const GENDER_OPTIONS = [
-  { value: 1, label: 'Femenino' },
-  { value: 2, label: 'Masculino' },
-  { value: 3, label: 'Femenino Deportista' },
-  { value: 4, label: 'Masculino Deportista' },
-];
+export interface BiofisicaFormData {
+  formType: number | null;
+  fields: BiofisicaField[];
+  chronological: number | null;
+  biological: number | null;
+  differential: number | null;
+}
 
-export const getFatName = (formType: number): string => {
-  switch (formType) {
-    case 1: return 'female_fat';
-    case 2: return 'male_fat';
-    case 3: return 'sporty_female_fat';
-    case 4: return 'sporty_male_fat';
-    default: return '';
-  }
-};
+export interface CalculationBoard {
+  name: string;
+  min_age: number;
+  max_age: number;
+  range_min: number;
+  range_max: number;
+  inverse: boolean;
+}
+
+export type CalculationBoards = Record<string, CalculationBoard>;

@@ -1,27 +1,29 @@
 // src/types/historia.ts
-export type NacionalidadType = 'V' | 'E' | 'J' | ''; // 'J' es un caracter especial, asegurar que sea intencional
+export type NacionalidadType = 'V' | 'E' | 'J' | '';
 export type GeneroType = 'Masculino' | 'Masculino Deportivo' | 'Femenino' | 'Femenino Deportivo' | '';
-export type GrupoSanguineoType = 'A+' | 'B+' | 'O+' | 'A-' | 'B-' | 'O-' | 'AB+' | 'AB-' | ''; // Corregido '0+' a 'O+' y '0-' a 'O-'
-export type EdoCivilType = 'Soltero(a)' | 'Casado(a)' | 'Divorciado(a)' | 'Viudo(a)' | '';
+export type GrupoSanguineoType = 'A+' | 'B+' | 'O+' | 'A-' | 'B-' | 'O-' | 'AB+' | 'AB-' | '';
+// ACTUALIZADO EdoCivilType para incluir las nuevas opciones
+export type EdoCivilType = 'Soltero(a)' | 'Comprometido(a)' | 'Casado(a)' | 'Divorciado(a)' | 'Viudo(a)' | 'Relación' | '';
 
 export interface HistoriaClinicaData {
   // Sección 1: Identificación y Datos Generales
-  id?: string; // Opcional, para cuando se edita
-  fotoUrl?: string; // URL de la foto del paciente
+  id?: string;
+  fotoUrl?: string;
   nacionalidad: NacionalidadType;
   identificacion: string;
-  fechaHistoria: string; // formato YYYY-MM-DD
+  fechaHistoria: string;
   apellidos: string;
   nombres: string;
-  fechaNacimiento: string; // formato YYYY-MM-DD
-  edadCronologica?: number; // Calculada o ingresada
+  fechaNacimiento: string;
+  edadCronologica?: number;
   genero: GeneroType;
   lugarNacimiento: string;
   telefono: string;
   edoCivil: EdoCivilType;
   profesion: string;
-  paisResidencia: string; // Diferente de nacionalidad
+  paisResidencia: string;
   estadoProvinciaResidencia: string;
+  ciudad?: string; // Añadido el campo ciudad que estaba en el formulario
   direccion: string;
   grupoSanguineo: GrupoSanguineoType;
   email: string;
@@ -36,7 +38,7 @@ export interface HistoriaClinicaData {
   medicamentosActuales?: string;
   enfermedadActual?: string;
 
-  // Sección 3: Examen Funcional
+  // Sección 3: Examen Funcional (Campos omitidos por brevedad en la pregunta, pero deben estar aquí)
   examenFuncionalGeneral?: string;
   examenFuncionalApetencias?: string;
   examenFuncionalAdicciones?: string;
@@ -51,7 +53,7 @@ export interface HistoriaClinicaData {
   examenFuncionalSueno?: string;
   examenFuncionalEmocional?: string;
 
-  // Sección 4: Examen Físico
+  // Sección 4: Examen Físico (Campos omitidos por brevedad en la pregunta, pero deben estar aquí)
   taSistolica?: number;
   taDiastolica?: number;
   pulso?: number;
@@ -69,16 +71,16 @@ export interface HistoriaClinicaData {
   examenFisicoPulmon?: string;
   examenFisicoLumbar?: string;
   examenFisicoExtremidades?: string;
-
-  // Sección 5: Laboratorio
-  fechaLaboratorio?: string; // formato YYYY-MM-DD
+  
+  // Sección 5: Laboratorio (Campos omitidos por brevedad en la pregunta, pero deben estar aquí)
+  fechaLaboratorio?: string;
   laboratorioHematologia?: string;
   laboratorioBioquimica?: string;
   laboratorioOrina?: string;
   laboratorioOtros?: string;
   laboratorioHeces?: string;
 
-  // Sección 6: Diagnóstico y Tratamiento
+  // Sección 6: Diagnóstico y Tratamiento (Campos omitidos por brevedad en la pregunta, pero deben estar aquí)
   impresionDiagnostica?: string;
   tratamiento?: string;
   observacionesAdicionales?: string;

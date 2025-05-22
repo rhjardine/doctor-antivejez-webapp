@@ -4,20 +4,27 @@
 import { type IconProp } from '@fortawesome/fontawesome-svg-core';
 import {
   faChartLine, faBookMedical, faUserMd, faRobot,
-  faFileMedicalAlt, faCog, faSignOutAlt, faComments,
+  faFileMedicalAlt, faCog, /* faSignOutAlt, */ faComments, // faSignOutAlt no se usa aquí directamente
   faFileMedical, faDatabase, faChartBar, faClipboardCheck,
   faProjectDiagram
 } from '@fortawesome/free-solid-svg-icons';
 
+// --- Interfaz para opciones de Select (DEBE ESTAR DEFINIDA AQUÍ O IMPORTADA) ---
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+// ---------------------------------------------------------------------------------
+
 // --- Constantes existentes ---
 export const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
-export const ACCEPTED_FILE_TYPES = { /* ... */ };
+// export const ACCEPTED_FILE_TYPES = { /* ... */ }; // Comentado si no se usa o está incompleto
 // ---------------------------
 
 // --- Interfaz para NAV_ITEMS (con IconProp) ---
 interface NavItemConstant {
   name: string;
-  icon: IconProp; // <--- Usa IconProp
+  icon: IconProp;
   href: string;
 }
 
@@ -29,7 +36,6 @@ export const NAV_ITEMS: NavItemConstant[] = [
   { name: 'Agente IA', icon: faRobot, href: '/agente-ia' },
   { name: 'Reportes', icon: faFileMedicalAlt, href: '/reportes' },
   { name: 'Ajustes', icon: faCog, href: '/ajustes' },
-  // El item 'Salir' se maneja por separado en Sidebar.tsx
 ];
 // ---------------------------
 
@@ -37,7 +43,7 @@ export const NAV_ITEMS: NavItemConstant[] = [
 interface AssistantTabConstant {
   id: string;
   name: string;
-  icon: IconProp; // <--- Usa IconProp
+  icon: IconProp;
 }
 
 // --- ASSISTANT_TABS Modificado ---
@@ -50,100 +56,77 @@ export const ASSISTANT_TABS: AssistantTabConstant[] = [
   { id: 'pathways', name: 'Pathway Analysis', icon: faProjectDiagram }
 ];
 
-// src/utils/constants.ts
-// ... (otros imports y constantes)
-import { DietaryOption, BloodTypeFilter } from '@/types'; // Asume que DietaryOption está en types
+// Asumiendo que DietaryOption y MealCategory están definidos en '@/types'
+// import { DietaryOption, MealCategory } from '@/types'; 
 
-// Opciones iniciales de dieta (ejemplo)
+// Opciones iniciales de dieta (ejemplo) - Comentado si no es relevante para el problema actual de los selects
+/*
 export const INITIAL_DIETARY_OPTIONS: Record<MealCategory, DietaryOption[]> = {
   breakfast: [
     { id: 'b1', text: 'Cereales de trigo sarraceno, avena sin gluten', bloodTypeTarget: 'O_B', isChecked: false },
-    { id: 'b2', text: 'Tortilla de huevo con avena s/g', bloodTypeTarget: 'O_B', isChecked: false },
-    { id: 'b3', text: 'Pan sin gluten', bloodTypeTarget: 'A_AB', isChecked: false },
-    { id: 'b4', text: 'Creps de yuca', bloodTypeTarget: 'A_AB', isChecked: false },
-    // ... Añade todas las opciones de desayuno del HTML original
+    // ...
   ],
   lunch: [
-    { id: 'l1', text: 'Carnes rojas o blancas', bloodTypeTarget: 'O_B', isChecked: false },
-    { id: 'l2', text: 'Pastillo de berenjena con pollo', bloodTypeTarget: 'A_AB', isChecked: false },
-    // ... Añade todas las opciones de almuerzo
+    // ...
   ],
   dinner: [
-    { id: 'd1', text: 'Sushi', bloodTypeTarget: 'O_B', isChecked: false },
-    { id: 'd2', text: 'Salmón a la marinara', bloodTypeTarget: 'A_AB', isChecked: false },
-    // ... Añade todas las opciones de cena
+    // ...
   ],
   snacks: [
-    { id: 's1', text: 'Gelatina de lámina o 1 cda de polvo sin sabor en infusión', bloodTypeTarget: 'O_B', isChecked: false },
-    { id: 's2', text: 'Helado Vegano (leche de almendras o coco)', bloodTypeTarget: 'A_AB', isChecked: false },
-    // ... Añade todas las opciones de meriendas/postres
+    // ...
   ],
 };
+*/
 
-/*export const BLOOD_TYPE_OPTIONS: { value: BloodTypeFilter; label: string }[] = [
-  { value: 'all', label: 'Todos' },
-  { value: 'O_B', label: 'O o B' },
-  { value: 'A_AB', label: 'A o AB' },
-];*/
-
-// --- CONSTANTES PARA FORMULARIO DE HISTORIA (DEBEN ESTAR PRESENTES Y EXPORTADAS) ---
-export const OPCIONES_NACIONALIDAD = [
+// --- CONSTANTES PARA FORMULARIO DE HISTORIA (CORREGIDAS Y TIPADAS) ---
+export const OPCIONES_NACIONALIDAD: SelectOption[] = [ // Tipado explícito
+  { value: '', label: 'Seleccione...' }, // Opción por defecto
   { value: 'V', label: 'Venezolano(a)' },
   { value: 'E', label: 'Extranjero(a)' },
-  { value: 'J', label: 'Jurídico' },
+  { value: 'J', label: 'Jurídico' }, // O el significado que tenga 'J'
 ];
 
-export const OPCIONES_GENERO_HISTORIA = [ // Esta es una de las que falta
+export const OPCIONES_GENERO_HISTORIA: SelectOption[] = [ // Tipado explícito
+  { value: '', label: 'Seleccione...' }, // Opción por defecto
   { value: 'Masculino', label: 'Masculino' },
   { value: 'Masculino Deportivo', label: 'Masculino Deportivo' },
   { value: 'Femenino', label: 'Femenino' },
   { value: 'Femenino Deportivo', label: 'Femenino Deportivo' },
 ];
 
-export const OPCIONES_GRUPO_SANGUINEO = [ // Esta es una de las que falta
+export const OPCIONES_GRUPO_SANGUINEO: SelectOption[] = [ // Tipado explícito
+  { value: '', label: 'Seleccione...' }, // Opción por defecto
   { value: 'A+', label: 'A+' }, { value: 'A-', label: 'A-' },
   { value: 'B+', label: 'B+' }, { value: 'B-', label: 'B-' },
   { value: 'O+', label: 'O+' }, { value: 'O-', label: 'O-' },
   { value: 'AB+', label: 'AB+' }, { value: 'AB-', label: 'AB-' },
 ];
 
-export const OPCIONES_EDO_CIVIL = [ // Esta es una de las que falta
-    { value: 'Soltero(a)', label: 'Soltero(a)' },
-    { value: 'Casado(a)', label: 'Casado(a)' },
-    { value: 'Concubinato', label: 'Concubinato' },
-    { value: 'Divorciado(a)', label: 'Divorciado(a)' },
-    { value: 'Viudo(a)', label: 'Viudo(a)' },
+export const OPCIONES_EDO_CIVIL: SelectOption[] = [ // Tipado explícito
+  { value: '', label: 'Seleccione...' }, // Opción por defecto
+  { value: 'Soltero(a)', label: 'Soltero(a)' },
+  { value: 'Comprometido(a)', label: 'Comprometido(a)' }, // De tu imagen anterior
+  { value: 'Casado(a)', label: 'Casado(a)' },
+  { value: 'Concubinato', label: 'Concubinato' }, // De tu código actual
+  { value: 'Divorciado(a)', label: 'Divorciado(a)' },
+  { value: 'Viudo(a)', label: 'Viudo(a)' },
+  { value: 'Relación', label: 'Relación' }, // De tu imagen anterior
 ];
+// ---------------------------------------------------------------------
 
 // --- CONSTANTES PARA LA SECCIÓN DE PROFESIONALES ---
-
-// Para ./src/app/profesionales/page.tsx
 export const ITEMS_PER_PAGE_PROFESIONALES: number = 10;
 
-// Para ./src/components/Profesionales/ProfesionalModal.tsx
 export interface ProfesionalRolConstant {
-  id: string; // Usaremos 'medico' y 'coach' como IDs
-  nombre: string; // El nombre visible
+  id: string;
+  nombre: string;
 }
 export const PROFESIONAL_ROLES: ProfesionalRolConstant[] = [
   { id: 'medico', nombre: 'Médico' },
   { id: 'coach', nombre: 'Coach' },
 ];
 
-// Para ./src/components/Profesionales/ProfesionalesTable.tsx
-// Decide si alguno de estos roles (o ambos, o ninguno) tiene límites de formularios.
-// Si, por ejemplo, solo los 'Coach' tienen límite:
 export const LIMITED_ROLES_PROFESIONALES: string[] = ['coach']; 
-// Si ambos tienen límite:
-// export const LIMITED_ROLES_PROFESIONALES: string[] = ['medico', 'coach'];
-// Si ninguno tiene límite, puedes dejarlo como un array vacío:
-// export const LIMITED_ROLES_PROFESIONALES: string[] = [];
-
-
-// Límite de formularios para roles limitados (si aplica)
-export const FORM_LIMIT: number = 50; // Ajusta si es necesario
-
-// Umbral para advertencia de límite de formularios (si aplica)
-export const FORM_LIMIT_WARNING_THRESHOLD: number = 40; // Ajusta si es necesario
-
+export const FORM_LIMIT: number = 50;
+export const FORM_LIMIT_WARNING_THRESHOLD: number = 40;
 // --- FIN DE CONSTANTES PARA PROFESIONALES ---
