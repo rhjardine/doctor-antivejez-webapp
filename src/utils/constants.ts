@@ -42,7 +42,7 @@ interface AssistantTabConstant {
 
 // --- ASSISTANT_TABS Modificado ---
 export const ASSISTANT_TABS: AssistantTabConstant[] = [
-  { id: 'chat', name: 'Conversational Assistant', icon: faComments },
+  { id: 'chat', name: 'Coach Conversacional', icon: faComments },
   { id: 'documents', name: 'Document Analysis', icon: faFileMedical },
   { id: 'knowledge', name: 'Knowledge Base', icon: faDatabase },
   { id: 'analysis', name: 'Analysis & Interpretation', icon: faChartBar },
@@ -80,10 +80,39 @@ export const INITIAL_DIETARY_OPTIONS: Record<MealCategory, DietaryOption[]> = {
   ],
 };
 
-export const BLOOD_TYPE_OPTIONS: { value: BloodTypeFilter; label: string }[] = [
+/*export const BLOOD_TYPE_OPTIONS: { value: BloodTypeFilter; label: string }[] = [
   { value: 'all', label: 'Todos' },
   { value: 'O_B', label: 'O o B' },
   { value: 'A_AB', label: 'A o AB' },
+];*/
+
+// --- CONSTANTES PARA FORMULARIO DE HISTORIA (DEBEN ESTAR PRESENTES Y EXPORTADAS) ---
+export const OPCIONES_NACIONALIDAD = [
+  { value: 'V', label: 'Venezolano(a)' },
+  { value: 'E', label: 'Extranjero(a)' },
+  { value: 'J', label: 'Jurídico' },
+];
+
+export const OPCIONES_GENERO_HISTORIA = [ // Esta es una de las que falta
+  { value: 'Masculino', label: 'Masculino' },
+  { value: 'Masculino Deportivo', label: 'Masculino Deportivo' },
+  { value: 'Femenino', label: 'Femenino' },
+  { value: 'Femenino Deportivo', label: 'Femenino Deportivo' },
+];
+
+export const OPCIONES_GRUPO_SANGUINEO = [ // Esta es una de las que falta
+  { value: 'A+', label: 'A+' }, { value: 'A-', label: 'A-' },
+  { value: 'B+', label: 'B+' }, { value: 'B-', label: 'B-' },
+  { value: 'O+', label: 'O+' }, { value: 'O-', label: 'O-' },
+  { value: 'AB+', label: 'AB+' }, { value: 'AB-', label: 'AB-' },
+];
+
+export const OPCIONES_EDO_CIVIL = [ // Esta es una de las que falta
+    { value: 'Soltero(a)', label: 'Soltero(a)' },
+    { value: 'Casado(a)', label: 'Casado(a)' },
+    { value: 'Concubinato', label: 'Concubinato' },
+    { value: 'Divorciado(a)', label: 'Divorciado(a)' },
+    { value: 'Viudo(a)', label: 'Viudo(a)' },
 ];
 
 // --- CONSTANTES PARA LA SECCIÓN DE PROFESIONALES ---
