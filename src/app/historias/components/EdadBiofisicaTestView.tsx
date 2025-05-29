@@ -13,23 +13,26 @@ interface EdadBiofisicaTestViewProps {
   initialCronoAge?: number;
   onBack: () => void;
   onTestSaved?: () => void;
+  fechaNacimiento?: string; // Nuevo prop para la fecha de nacimiento
 }
 
 export default function EdadBiofisicaTestView({ 
   patientId, 
   patientName,
   initialCronoAge = 0,
+  fechaNacimiento, // Recibir la fecha de nacimiento
   onBack,
   onTestSaved
 }: EdadBiofisicaTestViewProps) {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [offlineMode, setOfflineMode] = useState(false);
   
-  // Datos del paciente
+  // Datos del paciente, ahora incluye fechaNacimiento
   const patientData: PatientBiofisicaData = {
     id: patientId,
     name: patientName,
-    age: initialCronoAge
+    age: initialCronoAge,
+    fechaNacimiento: fechaNacimiento // Pasar la fecha de nacimiento al componente hijo
   };
   
   // Callback cuando se guarda el test

@@ -340,6 +340,14 @@ export interface BoardData {
   inverse?: boolean;
 }
 
+export interface PatientBiofisicaData {
+  id: string;
+  name: string;
+  age: number;
+  gender?: string;
+  fechaNacimiento?: string; // Nueva propiedad para la fecha de nacimiento
+}
+
 // Datos de un campo del formulario
 export interface BiofisicaField {
   name: string;     // Identificador interno (ej. "sporty_male_fat")

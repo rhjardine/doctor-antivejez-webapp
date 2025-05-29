@@ -75,9 +75,9 @@ export default function EdadBiofisicaForm({ patientData, onSave, onBack }: EdadB
     loadBoards();
   }, []);
   
-  // Establecer edad cronológica inicial
+  // Establecer edad cronológica inicial y actualizarla si cambia patientData.age
   useEffect(() => {
-    if (patientData.age && formData.chronological === null) {
+    if (patientData.age && patientData.age !== formData.chronological) {
       setFormData(prev => ({ ...prev, chronological: patientData.age }));
     }
   }, [patientData.age, formData.chronological]);
@@ -369,9 +369,9 @@ export default function EdadBiofisicaForm({ patientData, onSave, onBack }: EdadB
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 w-full max-w-full overflow-hidden">
+    <div className="flex flex-col lg:flex-row gap-6 w-full max-w-full">
       {/* Panel izquierdo - Formulario */}
-      <div className="bg-[#293B64] text-white p-6 rounded-lg shadow-md lg:w-1/2 w-full overflow-hidden">
+      <div className="bg-[#293B64] text-white p-6 rounded-lg shadow-md lg:w-1/2 w-full">
         <div className="flex justify-between items-center mb-6 pb-3 border-b-2 border-[#23BCEF]/40">
           <h2 className="text-xl font-semibold text-[#23BCEF]">Panel de Control</h2>
           <span className="text-sm">Paciente: {patientData.name}</span>
@@ -382,7 +382,7 @@ export default function EdadBiofisicaForm({ patientData, onSave, onBack }: EdadB
         {renderFallbackWarning()}
         {renderErrorMessage()}
         
-        <div className="space-y-4 overflow-y-auto pr-1" style={{ maxHeight: 'calc(100vh - 260px)' }}>
+        <div className="space-y-4">
           {/* Edad Cronológica */}
           <div className="form-group">
             <label htmlFor="chronological" className="block font-semibold mb-2">Edad Cronológica</label>
@@ -395,7 +395,13 @@ export default function EdadBiofisicaForm({ patientData, onSave, onBack }: EdadB
               required
               value={formData.chronological || ''}
               onChange={handleChronologicalChange}
+              readOnly={!!patientData.age} // Hacer readonly si viene del paciente
             />
+            {patientData.age && (
+              <p className="text-xs text-[#23BCEF]/80 mt-1">
+                Edad tomada del registro del paciente
+              </p>
+            )}
           </div>
           
           {/* Género */}
@@ -527,16 +533,16 @@ export default function EdadBiofisicaForm({ patientData, onSave, onBack }: EdadB
               </div>
             </div>
           )}
+          
+          {/* Botones de acción */}
+          {renderActionButtons()}
         </div>
-        
-        {/* Botones de acción */}
-        {renderActionButtons()}
       </div>
       
       {/* Panel derecho - Resultados y Gráficos */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-4 lg:w-1/2 w-full overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-4 lg:w-1/2 w-full">
         {calculationStatus === 'calculated' && formData.biological !== null ? (
-          <div className="overflow-y-auto pr-1" style={{ maxHeight: 'calc(100vh - 160px)' }}>
+          <>
             <BiofisicaResult 
               biologicalAge={formData.biological}
               chronologicalAge={formData.chronological || 0}
@@ -561,7 +567,7 @@ export default function EdadBiofisicaForm({ patientData, onSave, onBack }: EdadB
                 }
               </div>
             </div>
-          </div>
+          </>
         ) : (
           <div className="flex flex-col items-center justify-center h-64">
             <div className="text-center mb-4">
