@@ -1,15 +1,8 @@
-// src/components/PatientHeader.tsx
-'use client'; // Necesario si usas hooks o interactividad, o si este componente es importado por un Client Component.
-
-import React from 'react'; // Importa React
-import { Patient } from '@/types'; // Verifica esta ruta
-import { formatDate } from '@/utils/helpers'; // Verifica esta ruta
+// components/PatientHeader.tsx
+import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// --- IMPORTA EL ICONO ESPECÍFICO AQUÍ ARRIBA ---
-import { faUser, faUserMd } from '@fortawesome/free-solid-svg-icons'; // O faUserCircle, el que prefieras y vayas a usar.
-// Si solo usas faUser, puedes quitar faUserMd. Si usas faUserMd, puedes quitar faUser.
-// O si quieres usar otro ícono como faUserDoctor, impórtalo: import { faUserDoctor } from '@fortawesome/free-solid-svg-icons';
-// ---------------------------------------------
+import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { Patient } from '@/types';
 
 interface PatientHeaderProps {
   patient: Patient;
@@ -17,56 +10,56 @@ interface PatientHeaderProps {
 
 export default function PatientHeader({ patient }: PatientHeaderProps) {
   return (
-    <div className="flex items-center p-5 bg-white dark:bg-[#2E3A4A] rounded-lg shadow-sm mb-6 transition-all duration-300 border-l-4 border-blue-500 dark:border-blue-400 hover:shadow-md hover:-translate-y-0.5">
-      <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-[#242F3F] mr-4 flex items-center justify-center text-blue-500 dark:text-blue-400 text-2xl transition-transform duration-200 flex-shrink-0 hover:scale-105">
-        {/* --- USA EL ICONO IMPORTADO --- */}
-        {/* Elige cuál icono quieres mostrar. Por ejemplo, faUser: */}
-        <FontAwesomeIcon icon={faUser} />
-        {/* O si prefieres faUserMd: */}
-        {/* <FontAwesomeIcon icon={faUserMd} /> */}
-        {/* ----------------------------- */}
+    <div className="flex items-center bg-bg-card-light dark:bg-bg-card-dark p-6 rounded-lg shadow-lg border border-border-light dark:border-border-dark">
+      {/* Foto del paciente */}
+      <div className="mr-6">
+        {patient.fotoUrl ? (
+          <div className="relative w-20 h-20 rounded-full overflow-hidden border-3 border-primary shadow-lg">
+            <Image
+              src={patient.fotoUrl}
+              alt={`Foto de ${patient.name}`}
+              fill
+              className="object-cover"
+              sizes="80px"
+            />
+          </div>
+        ) : (
+          <div className="w-20 h-20 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
+            <FontAwesomeIcon icon={faUser} className="w-8 h-8 text-primary" />
+          </div>
+        )}
       </div>
-
+      
+      {/* Datos del paciente */}
       <div className="flex-1">
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-[#E0E6ED] mb-1">
+        <div className="text-2xl font-bold text-text-light-base dark:text-text-dark-base mb-1">
           {patient.name}
-        </h2>
-        <div className="text-gray-600 dark:text-[#B8C4CF] text-sm">
-          {patient.age} years • {patient.gender} • ID: {patient.id}
+        </div>
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="text-text-light-medium dark:text-text-dark-medium">
+            <span className="font-medium">Edad:</span> {patient.age} años
+          </div>
+          <div className="text-text-light-medium dark:text-text-dark-medium">
+            <span className="font-medium">Género:</span> {patient.gender}
+          </div>
         </div>
       </div>
-
-      <div className="flex gap-5 ml-auto flex-wrap">
-        <div className="text-center transition-all duration-200 p-2 rounded-md hover:bg-blue-500/5 flex-grow min-w-[100px]">
-          <div className="text-xs text-gray-500 dark:text-[#B8C4CF] mb-1">
-            Biological Age
-          </div>
-          <div className="text-xl font-semibold text-blue-600 dark:text-blue-400 break-words">
-            {patient.biologicalAge}
-            {patient.trend && (
-              <span className={`text-sm font-medium ml-1 ${patient.trend < 0 ? 'text-green-500' : 'text-red-500'}`}>
-                ({patient.trend > 0 ? '+' : ''}{patient.trend})
-              </span>
-            )}
-          </div>
+      
+      {/* Indicadores de salud */}
+      <div className="flex space-x-6">
+        <div className="text-center p-3 bg-primary/5 rounded-lg border border-primary/20">
+          <p className="text-xs text-text-light-medium dark:text-text-dark-medium mb-1">Edad Biológica</p>
+          <p className="text-xl font-bold text-primary">{patient.biologicalAge}</p>
         </div>
-
-        <div className="text-center transition-all duration-200 p-2 rounded-md hover:bg-blue-500/5 flex-grow min-w-[100px]">
-          <div className="text-xs text-gray-500 dark:text-[#B8C4CF] mb-1">
-            Health Score
-          </div>
-          <div className="text-xl font-semibold text-blue-600 dark:text-blue-400 break-words">
-            {patient.healthScore}/100
-          </div>
+        <div className="text-center p-3 bg-primary/5 rounded-lg border border-primary/20">
+          <p className="text-xs text-text-light-medium dark:text-text-dark-medium mb-1">Tendencia</p>
+          <p className={`text-xl font-bold ${patient.trend < 0 ? 'text-green-500' : 'text-red-500'}`}>
+            {patient.trend > 0 ? '+' : ''}{patient.trend}
+          </p>
         </div>
-
-        <div className="text-center transition-all duration-200 p-2 rounded-md hover:bg-blue-500/5 flex-grow min-w-[100px]">
-          <div className="text-xs text-gray-500 dark:text-[#B8C4CF] mb-1">
-            Last Checkup
-          </div>
-          <div className="text-xl font-semibold text-blue-600 dark:text-blue-400 break-words">
-            {patient.lastCheckup ? formatDate(patient.lastCheckup) : 'N/A'}
-          </div>
+        <div className="text-center p-3 bg-primary/5 rounded-lg border border-primary/20">
+          <p className="text-xs text-text-light-medium dark:text-text-dark-medium mb-1">Salud</p>
+          <p className="text-xl font-bold text-green-500">{patient.healthScore}%</p>
         </div>
       </div>
     </div>

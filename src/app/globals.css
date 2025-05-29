@@ -5,70 +5,140 @@
 
 :root {
   /* --- Colores Corporativos --- */
-  --color-primary-rgb: 35, 188, 239; /* Azul Cielo Principal (RGB) */
-  --color-primary-darker-rgb: 28, 151, 191; /* Azul Cielo Más Oscuro (RGB) */
-
-  --color-secondary-rgb: 41, 59, 100; /* Azul Oscuro Principal para Sidebar (RGB) */
-  --color-secondary-light-rgb: 61, 88, 149; /* Para bordes o hovers en el sidebar (RGB) */
-
-  /* --- Colores de Texto (Modo Claro) --- */
-  --color-text-base-light: 44, 62, 80;     /* #2C3E50 - Casi negro, buen contraste */
-  --color-text-muted-light: 102, 102, 102;  /* #666666 - Gris para texto secundario */
-  --color-text-on-primary-light: 255, 255, 255; /* Blanco para texto sobre fondo primario */
-  --color-text-on-secondary-light: 229, 231, 235; /* gray-200 para texto sobre fondo secundario (sidebar) */
+  --color-primary: 35, 188, 239; /* Azul Principal RGB */
+  --color-primary-light: 93, 211, 248; /* Azul Claro RGB */
+  --color-primary-dark: 28, 151, 191; /* Azul Oscuro RGB */
+  --color-secondary: 41, 59, 100; /* Azul Sidebar RGB */
+  --color-secondary-light: 61, 88, 149; /* Azul Sidebar Claro RGB */
   
-  /* --- Colores de Fondo (Modo Claro) --- */
-  /* SI QUIERES EL FONDO GENERAL AZUL CIELO, USA ESTO: */
-  /* --color-bg-page-light: var(--color-primary-rgb); */ 
-  /* SI QUIERES UN FONDO MÁS NEUTRO (GRIS CLARO) Y EL AZUL CIELO PARA ELEMENTOS ESPECÍFICOS: */
-  --color-bg-page-light: 243, 244, 246;   /* gray-100 */
-  --color-bg-card-light: 255, 255, 255;    /* white */
-
-  /* --- Colores de Borde (Modo Claro) --- */
-  --color-border-light: 224, 224, 224; /* Un gris claro para bordes */
-
-  /* --- Colores de Estado (RGB para opacidad) --- */
-  --color-success-rgb: 22, 163, 74;
-  --color-warning-rgb: 245, 158, 11;
-  --color-danger-rgb: 220, 38, 38;
-  --color-info-rgb: 59, 130, 246;
-
-  /* Fuente (tu variable --font-inter de layout.tsx se usará si está definida allí) */
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  /* --- Colores Base --- */
+  --color-text-base: 44, 62, 80; /* #2C3E50 */
+  --color-text-muted: 102, 102, 102; /* #666666 */
+  --color-bg-base: 248, 249, 250; /* #F8F9FA */
+  --color-bg-card: 255, 255, 255; /* #FFFFFF */
+  --color-border-base: 224, 224, 224; /* #E0E0E0 */
+  
+  /* --- Colores Estado --- */
+  --color-success: 22, 163, 74; /* Verde */
+  --color-warning: 245, 158, 11; /* Amarillo */
+  --color-danger: 220, 38, 38; /* Rojo */
+  --color-info: 59, 130, 246; /* Azul */
 }
 
 .dark {
-  /* --- Colores de Texto (Modo Oscuro) --- */
-  --color-text-base-dark: 229, 231, 235;   /* gray-200 */
-  --color-text-muted-dark: 156, 163, 175;  /* gray-400 */
-  --color-text-on-primary-dark: 255, 255, 255; /* Blanco sobre primario (puede ser el mismo) */
-  /* Para el sidebar en modo oscuro, el texto ya es claro (on-secondary-light) */
-  --color-text-on-secondary-dark: 229, 231, 235; /* gray-200, igual que on-secondary-light */
+  /* --- Colores Base Dark --- */
+  --color-text-base: 229, 231, 235; /* #E5E7EB */
+  --color-text-muted: 156, 163, 175; /* #9CA3AF */
+  --color-bg-base: 17, 24, 39; /* #111827 */
+  --color-bg-card: 31, 41, 55; /* #1F2937 */
+  --color-border-base: 55, 65, 81; /* #374151 */
+}
 
-  /* --- Colores de Fondo (Modo Oscuro) --- */
-  /* SI QUIERES EL FONDO GENERAL AZUL CIELO (MÁS OSCURO) EN DARK MODE: */
-  --color-bg-page-dark: 28, 151, 191;  /* Usando primary-darker */
-  /* SI QUIERES UN FONDO OSCURO NEUTRO: */
-  --color-bg-page-dark: 17, 24, 39;      /* gray-900 */
-  --color-bg-card-dark: 31, 41, 55;       /* gray-800 */
+@layer base {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
   
-  /* --- Colores de Borde (Modo Oscuro) --- */
-  --color-border-dark: 55, 65, 81;      /* gray-700 */
+  *, *::before, *::after {
+    box-sizing: inherit;
+  }
+  
+  body {
+    background-color: rgb(var(--color-bg-base));
+    color: rgb(var(--color-text-base));
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    position: relative;
+  }
+  
+  /* Estilos para scrollbar (adaptados para ser menos intrusivos) */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--color-primary), 0.5) transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--color-primary), 0.5);
+    border-radius: 20px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(var(--color-primary), 0.7);
+  }
 }
 
-body {
-  font-family: var(--font-sans);
-  background-color: rgb(var(--color-bg-page-light));
-  color: rgb(var(--color-text-base-light));
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.3s ease, color 0.3s ease; /* Transición suave para tema */
+@layer components {
+  /* Botones Corporativos */
+  .btn-primary {
+    @apply bg-[#23BCEF] text-white hover:bg-[#23BCEF]/90 focus:outline-none focus:ring-2 focus:ring-[#23BCEF]/50 transition-colors font-semibold;
+  }
+  
+  .btn-secondary {
+    @apply bg-[#293B64] text-white hover:bg-[#3D5895] focus:outline-none focus:ring-2 focus:ring-[#293B64]/50 transition-colors font-semibold;
+  }
+  
+  /* Contenedores seguros (sin overflow) */
+  .container-safe {
+    @apply w-full max-w-full overflow-hidden;
+  }
+  
+  /* Tarjetas */
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700;
+  }
+  
+  /* Tablas responsivas */
+  .table-container {
+    @apply w-full overflow-x-auto;
+  }
+  
+  /* Headers de sección */
+  .section-header {
+    @apply text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 flex items-center gap-2;
+  }
 }
 
-.dark body {
-  background-color: rgb(var(--color-bg-page-dark));
-  color: rgb(var(--color-text-base-dark));
+/* Fix para el contenido principal */
+#main-content-area {
+  width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
-/* Estilos base para scrollbar (opcional) */
-.scrollbar-thin { /* ... (mantenido de tu versión anterior) ... */ }
+@media (min-width: 768px) {
+  #main-content-area {
+    width: calc(100% - 64px);
+    margin-left: 64px;
+  }
+}
+
+@media (min-width: 768px) {
+  .sidebar-expanded #main-content-area {
+    width: calc(100% - 224px);
+    margin-left: 224px;
+  }
+}
+
+/* Para asegurar que los elementos se muestran correctamente */
+.hidden-overflow {
+  overflow: hidden;
+}
+
+.max-w-content {
+  max-width: 100%;
+  width: 100%;
+}

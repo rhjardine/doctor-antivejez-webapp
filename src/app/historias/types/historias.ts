@@ -8,6 +8,7 @@ export interface HistoriaClinicaData {
   // Sección 1: Identificación y Datos Generales
   id?: string; // Opcional, para cuando se edita
   fotoUrl?: string; // URL de la foto del paciente
+  fotoFile?: File & { type: string } | null; // Asegura que sea un archivo con tipo definido
   nacionalidad: NacionalidadType;
   identificacion: string;
   fechaHistoria: string; // formato YYYY-MM-DD

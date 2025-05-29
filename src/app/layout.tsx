@@ -29,7 +29,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'MediLongevity AI Assistant',
+  title: 'DoctorAntivejez WebApp',
   description: 'Asistente de IA para medicina de longevidad y anti-envejecimiento',
   icons: { icon: '/favicon.ico' },
 };
@@ -45,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const mockUser: UserProps = {
-    name: "Dr. Juan Carlos Mendez",
+    name: "Dr. Juan C. Mendez",
     role: "Medico Antienvejecimiento"
   };
 

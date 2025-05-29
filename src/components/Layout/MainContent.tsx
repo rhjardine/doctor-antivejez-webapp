@@ -1,27 +1,37 @@
 // src/components/Layout/MainContent.tsx
 'use client';
-
+import React from 'react';
 import { useAppState } from '@/contexts/AppStateProvider';
 import { cn } from '@/utils/helpers';
-import { ReactNode } from 'react';
 
 interface MainContentProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 export default function MainContent({ children }: MainContentProps) {
   const { isSidebarCollapsed } = useAppState();
-
+  
   return (
     <main
-      id="main-content"
+      id="main-content-area"
       className={cn(
-        'transition-all duration-300 ease-in-out', // Transición suave
-        'flex-1 overflow-y-auto overflow-x-hidden',
-        'pt-08 px-2 md:px-4', // Padding superior para el header
-        isSidebarCollapsed ? 'md:ml-08' : 'md:ml-28' // Margen izquierdo dinámico
+        // Base styles
+        'flex-1',
+        'min-h-screen',
+        'overflow-y-auto overflow-x-hidden',
+        // Transition only on margin-left to make it smoother
+        'transition-[margin-left] duration-200 ease-in-out',
+        // Responsive margin adjustments
+        'ml-0', // No margin on mobile by default
+        // Apply margin only on medium screens and up
+        isSidebarCollapsed ? 'md:ml-16' : 'md:ml-56',
+        // Ensure content doesn't overflow
+        'w-[calc(100vw-0px)]', // Mobile full width
+        'md:w-[calc(100vw-64px)]', // Medium screens with collapsed sidebar (16rem = 64px)
+        !isSidebarCollapsed && 'md:w-[calc(100vw-224px)]', // Medium screens with expanded sidebar (56rem = 224px)
+        // No padding - let children handle padding
+        'p-0'
       )}
-      style={{ minHeight: '100vh' }}
     >
       {children}
     </main>

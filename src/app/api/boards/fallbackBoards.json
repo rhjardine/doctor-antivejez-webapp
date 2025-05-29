@@ -1,0 +1,398 @@
+[
+    {
+      "id": 15,
+      "range_id": 1,
+      "type": 1,
+      "name": "sporty_male_fat",
+      "min": "1",
+      "max": "7",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 1,
+        "min": 21,
+        "max": 28,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 16,
+      "range_id": 2,
+      "type": 1,
+      "name": "sporty_male_fat",
+      "min": "8",
+      "max": "15",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 2,
+        "min": 29,
+        "max": 39,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 17,
+      "range_id": 3,
+      "type": 1,
+      "name": "male_fat",
+      "min": "10",
+      "max": "15",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 3,
+        "min": 21,
+        "max": 28,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 18,
+      "range_id": 4,
+      "type": 1,
+      "name": "male_fat",
+      "min": "16",
+      "max": "25",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 4,
+        "min": 29,
+        "max": 39,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 19,
+      "range_id": 5,
+      "type": 1,
+      "name": "female_fat",
+      "min": "18",
+      "max": "25",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 5,
+        "min": 21,
+        "max": 28,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 20,
+      "range_id": 6,
+      "type": 1,
+      "name": "female_fat",
+      "min": "26",
+      "max": "35",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 6,
+        "min": 29,
+        "max": 39,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 21,
+      "range_id": 7,
+      "type": 1,
+      "name": "sporty_female_fat",
+      "min": "14",
+      "max": "17",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 7,
+        "min": 21,
+        "max": 28,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 22,
+      "range_id": 8,
+      "type": 1,
+      "name": "sporty_female_fat",
+      "min": "18",
+      "max": "20",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 8,
+        "min": 29,
+        "max": 39,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 23,
+      "range_id": 9,
+      "type": 1,
+      "name": "body_mass",
+      "min": "18.5",
+      "max": "25",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 9,
+        "min": 21,
+        "max": 35,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 24,
+      "range_id": 10,
+      "type": 1,
+      "name": "body_mass",
+      "min": "25.1",
+      "max": "30",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 10,
+        "min": 36,
+        "max": 50,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 25,
+      "range_id": 11,
+      "type": 1,
+      "name": "digital_reflections",
+      "min": "5",
+      "max": "10",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 1,
+      "range": {
+        "id": 11,
+        "min": 21,
+        "max": 35,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 26,
+      "range_id": 12,
+      "type": 1,
+      "name": "digital_reflections",
+      "min": "11",
+      "max": "20",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 1,
+      "range": {
+        "id": 12,
+        "min": 36,
+        "max": 50,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 27,
+      "range_id": 13,
+      "type": 1,
+      "name": "visual_accommodation",
+      "min": "5",
+      "max": "10",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 1,
+      "range": {
+        "id": 13,
+        "min": 21,
+        "max": 35,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 28,
+      "range_id": 14,
+      "type": 1,
+      "name": "visual_accommodation",
+      "min": "11",
+      "max": "15",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 1,
+      "range": {
+        "id": 14,
+        "min": 36,
+        "max": 50,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 29,
+      "range_id": 15,
+      "type": 1,
+      "name": "static_balance",
+      "min": "10",
+      "max": "30",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 1,
+      "range": {
+        "id": 15,
+        "min": 21,
+        "max": 35,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 30,
+      "range_id": 16,
+      "type": 1,
+      "name": "static_balance",
+      "min": "31",
+      "max": "60",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 1,
+      "range": {
+        "id": 16,
+        "min": 36,
+        "max": 50,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 31,
+      "range_id": 17,
+      "type": 1,
+      "name": "quaten_hydration",
+      "min": "2",
+      "max": "5",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 1,
+      "range": {
+        "id": 17,
+        "min": 21,
+        "max": 35,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 32,
+      "range_id": 18,
+      "type": 1,
+      "name": "quaten_hydration",
+      "min": "6",
+      "max": "10",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 1,
+      "range": {
+        "id": 18,
+        "min": 36,
+        "max": 50,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 33,
+      "range_id": 19,
+      "type": 1,
+      "name": "systolic_blood_pressure",
+      "min": "90",
+      "max": "120",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 19,
+        "min": 21,
+        "max": 35,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 34,
+      "range_id": 20,
+      "type": 1,
+      "name": "systolic_blood_pressure",
+      "min": "121",
+      "max": "140",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 20,
+        "min": 36,
+        "max": 50,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 35,
+      "range_id": 21,
+      "type": 1,
+      "name": "diastolic_blood_pressure",
+      "min": "60",
+      "max": "80",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 21,
+        "min": 21,
+        "max": 35,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    },
+    {
+      "id": 36,
+      "range_id": 22,
+      "type": 1,
+      "name": "diastolic_blood_pressure",
+      "min": "81",
+      "max": "90",
+      "created_at": "2020-09-28 19:01:59",
+      "updated_at": "2020-09-28 19:01:59",
+      "inverse": 0,
+      "range": {
+        "id": 22,
+        "min": 36,
+        "max": 50,
+        "created_at": "2020-08-28 12:54:30",
+        "updated_at": "2020-08-28 12:54:30"
+      }
+    }
+  ]

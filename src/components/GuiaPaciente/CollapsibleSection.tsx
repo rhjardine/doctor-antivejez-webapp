@@ -1,69 +1,62 @@
 // src/components/GuiaPaciente/CollapsibleSection.tsx
 'use client';
-
-import { useState, ReactNode } from 'react';
+import React, { useState, ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, type IconProp } from '@fortawesome/free-solid-svg-icons'; // Importa IconProp
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { cn } from '@/utils/helpers';
 
 interface CollapsibleSectionProps {
   title: string;
   children: ReactNode;
-  initialCollapsed?: boolean;
-  icon?: IconProp; // Usar IconProp
+  defaultOpen?: boolean;
   titleClassName?: string;
   contentClassName?: string;
-  id?: string; // Para accesibilidad (aria-controls)
+  icon?: React.ReactNode; // Para un icono a la izquierda del título
 }
 
 export default function CollapsibleSection({
   title,
   children,
-  initialCollapsed = true,
-  icon,
+  defaultOpen = false,
   titleClassName,
   contentClassName,
-  id
+  icon,
 }: CollapsibleSectionProps) {
-  const [isCollapsed, setIsCollapsed] = useState(initialCollapsed);
-  const contentId = id ? `${id}-content` : undefined;
+  const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="mb-5 rounded-lg shadow-sm border border-light-border dark:border-dark-border overflow-hidden">
-      <h3 className="m-0" id={id}> {/* Título como h3 para semántica */}
-        <button
-          type="button"
-          className={cn(
-            "w-full p-3 text-left flex justify-between items-center cursor-pointer",
-            "bg-secondary text-white dark:bg-dark-bg-card dark:text-dark-text", // Colores corporativos
-            "hover:bg-secondary-light dark:hover:bg-dark-bg",
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-dark-bg-card",
-            titleClassName
-          )}
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          aria-expanded={!isCollapsed}
-          aria-controls={contentId}
-        >
-          <span className="font-semibold flex items-center gap-2">
-            {icon && <FontAwesomeIcon icon={icon} className="w-4 h-4" />}
-            {title}
-          </span>
-          <FontAwesomeIcon
-            icon={faChevronDown}
-            className={cn("transition-transform duration-300 ease-in-out", !isCollapsed && "rotate-180")}
-          />
-        </button>
-      </h3>
-      {!isCollapsed && (
-        <div
-          id={contentId}
-          role="region"
-          aria-labelledby={id}
-          className={cn("p-4 bg-light-bg-card dark:bg-dark-bg-card", contentClassName)}
-        >
-          {children}
+    <div className="mb-5 border border-border-light dark:border-border-dark rounded-lg overflow-hidden shadow-sm">
+      <legend
+        className={cn(
+          "cursor-pointer p-3 sm:p-4 bg-secondary text-white flex justify-between items-center transition-colors duration-200 ease-in-out hover:bg-secondary-light",
+          titleClassName
+        )}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-controls={`collapsible-content-${title.replace(/\s+/g, '-').toLowerCase()}`}
+      >
+        <div className="flex items-center gap-2">
+          {icon && <span className="w-5 h-5">{icon}</span>}
+          <span className="font-semibold text-base sm:text-lg">{title}</span>
         </div>
-      )}
+        <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} className="transition-transform duration-300 ease-in-out w-4 h-4" />
+      </legend>
+      {/* Contenido colapsable */}
+      <div
+        id={`collapsible-content-${title.replace(/\s+/g, '-').toLowerCase()}`}
+        className={cn(
+          "transition-all duration-300 ease-in-out overflow-hidden",
+          isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0", // max-h grande para permitir contenido variable
+          contentClassName
+        )}
+      >
+        {/* El padding se aplica aquí para que no afecte la animación de max-height */}
+        {isOpen && (
+            <fieldset className="border-none p-4 sm:p-5 bg-bg-card-light dark:bg-bg-card-dark">
+                {children}
+            </fieldset>
+        )}
+      </div>
     </div>
   );
 }

@@ -27,7 +27,7 @@ interface MetricCardProps {
 const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, children, className, iconBgColor = "bg-primary/10 dark:bg-dark-primary/10" }) => {
   return (
     <div className={cn(
-      "bg-light-bg-card dark:bg-dark-bg-card p-4 sm:p-5 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300",
+      "bg-light-bg-card dark:bg-dark-bg-card p-4 sm:p-5 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 w-full",
       className
     )}>
       <div className="flex items-center justify-between mb-3">
@@ -125,56 +125,58 @@ export default function DashboardPage() {
   const [chartRange, setChartRange] = useState('ultimo-ano');
 
   return (
-    <main className="transition-all ease-in-out duration-300 ml-0 md:ml-16 xl:ml-56 px-2 sm:px-4 py-4 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-text-dark dark:text-dark-text flex items-center gap-2">
-          <FontAwesomeIcon icon={faDna} className="text-primary dark:text-dark-primary" />
-          VitalAge Hub
-        </h1>
-      </div>
+    <main className="w-full max-w-full px-4 sm:px-6 py-4 space-y-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-text-dark dark:text-dark-text flex items-center gap-2">
+            <FontAwesomeIcon icon={faDna} className="text-primary dark:text-dark-primary" />
+            VitalAge Hub
+          </h1>
+        </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <MetricCard title="Edad Biológica Promedio">
-          <div className="relative h-28 w-28 mx-auto">
-            <Doughnut data={doughnutData} options={doughnutOptions} />
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-2xl font-bold text-primary dark:text-dark-primary">52</span>
-              <span className="text-xs text-text-medium dark:text-dark-text-medium">años</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+          <MetricCard title="Edad Biológica Promedio">
+            <div className="relative h-28 w-28 mx-auto">
+              <Doughnut data={doughnutData} options={doughnutOptions} />
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-2xl font-bold text-primary dark:text-dark-primary">52</span>
+                <span className="text-xs text-text-medium dark:text-dark-text-medium">años</span>
+              </div>
             </div>
+          </MetricCard>
+          <MetricCard title="Pacientes Registrados" value="132" icon={faUsers} />
+          <MetricCard title="Nuevos Registros (Mes)" value="13" icon={faUserPlus} />
+        </div>
+
+        <div className="bg-light-bg-card dark:bg-dark-bg-card p-4 sm:p-6 rounded-xl shadow-lg w-full">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-text-dark dark:text-dark-text">Pacientes Activos</h3>
+            <select
+              value={chartRange}
+              onChange={(e) => setChartRange(e.target.value)}
+              className="mt-2 sm:mt-0 block w-full sm:w-auto pl-3 pr-8 py-1.5 text-sm border border-light-border dark:border-dark-border bg-light-bg dark:bg-dark-bg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary rounded-md text-text-dark dark:text-dark-text"
+            >
+              <option value="ultimo-ano">Último Año</option>
+              <option value="ultimos-6-meses">Últimos 6 Meses</option>
+              <option value="ultimo-trimestre">Último Trimestre</option>
+            </select>
           </div>
-        </MetricCard>
-        <MetricCard title="Pacientes Registrados" value="132" icon={faUsers} />
-        <MetricCard title="Nuevos Registros (Mes)" value="13" icon={faUserPlus} />
-      </div>
-
-      <div className="bg-light-bg-card dark:bg-dark-bg-card p-4 sm:p-6 rounded-xl shadow-lg">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-text-dark dark:text-dark-text">Pacientes Activos</h3>
-          <select
-            value={chartRange}
-            onChange={(e) => setChartRange(e.target.value)}
-            className="mt-2 sm:mt-0 block w-full sm:w-auto pl-3 pr-8 py-1.5 text-sm border border-light-border dark:border-dark-border bg-light-bg dark:bg-dark-bg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary rounded-md text-text-dark dark:text-dark-text"
-          >
-            <option value="ultimo-ano">Último Año</option>
-            <option value="ultimos-6-meses">Últimos 6 Meses</option>
-            <option value="ultimo-trimestre">Último Trimestre</option>
-          </select>
+          <div className="h-72 md:h-80 w-full">
+            <Line data={lineChartData} options={lineChartOptions} />
+          </div>
         </div>
-        <div className="h-72 md:h-80">
-          <Line data={lineChartData} options={lineChartOptions} />
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        <MetricCard title="Próximas Citas" value="3" icon={faCalendarAlt} iconBgColor="bg-info/10 dark:bg-info/20">
-          <p className="text-sm text-text-medium dark:text-dark-text-medium mt-1">3 citas hoy</p>
-        </MetricCard>
-        <MetricCard title="Estadísticas Clave" value="..." icon={faChartLine} iconBgColor="bg-success/10 dark:bg-success/20">
-          <p className="text-sm text-text-medium dark:text-dark-text-medium mt-1">Métrica importante...</p>
-        </MetricCard>
-        <MetricCard title="Pacientes Recientes" value="Ver Lista" icon={faUsers} iconBgColor="bg-warning/10 dark:bg-warning/20">
-          <p className="text-sm text-text-medium dark:text-dark-text-medium mt-1">Nuevos pacientes esta semana...</p>
-        </MetricCard>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mt-6">
+          <MetricCard title="Próximas Citas" value="3" icon={faCalendarAlt} iconBgColor="bg-info/10 dark:bg-info/20">
+            <p className="text-sm text-text-medium dark:text-dark-text-medium mt-1">3 citas hoy</p>
+          </MetricCard>
+          <MetricCard title="Estadísticas Clave" value="..." icon={faChartLine} iconBgColor="bg-success/10 dark:bg-success/20">
+            <p className="text-sm text-text-medium dark:text-dark-text-medium mt-1">Métrica importante...</p>
+          </MetricCard>
+          <MetricCard title="Pacientes Recientes" value="Ver Lista" icon={faUsers} iconBgColor="bg-warning/10 dark:bg-warning/20">
+            <p className="text-sm text-text-medium dark:text-dark-text-medium mt-1">Nuevos pacientes esta semana...</p>
+          </MetricCard>
+        </div>
       </div>
     </main>
   );

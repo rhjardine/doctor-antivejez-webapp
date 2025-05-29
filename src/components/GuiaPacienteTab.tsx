@@ -1,5 +1,5 @@
 // src/components/GuiaPacienteTab.tsx
-'use client';
+/*'use client';
 
 import { useState, useEffect, ChangeEvent, FormEvent, useCallback } from 'react'; // Asegúrate que useState y useCallback estén aquí
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

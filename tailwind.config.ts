@@ -1,12 +1,5 @@
-// ./tailwind.config.ts
-import type { Config } from 'tailwindcss';
-
-// Función helper para convertir RGB a formato CSS
-function rgb(r: number, g: number, b: number): string {
-  return `rgb(${r}, ${g}, ${b})`;
-}
-
-const config: Config = {
+// tailwind.config.js
+module.exports = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -15,55 +8,67 @@ const config: Config = {
   darkMode: 'class',
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['var(--font-inter)', 'Inter', 'sans-serif'],
-      },
       colors: {
-        // --- Colores Corporativos ---
+        // Colores corporativos principales
         primary: {
-          light: rgb(142, 202, 230), // #8ECAE6 (Para hover/light themes)
-          DEFAULT: rgb(35, 188, 239), // Azul claro principal
-          dark: rgb(28, 151, 191),   // Un tono más oscuro para hover/active
+          DEFAULT: 'rgb(35, 188, 239)', // #23BCEF
+          50: 'rgb(240, 251, 255)',
+          100: 'rgb(224, 247, 255)',
+          200: 'rgb(186, 237, 255)',
+          300: 'rgb(125, 223, 255)',
+          400: 'rgb(56, 200, 255)',
+          500: 'rgb(35, 188, 239)', // Color principal
+          600: 'rgb(2, 132, 199)',
+          700: 'rgb(3, 105, 161)',
+          800: 'rgb(7, 89, 133)',
+          900: 'rgb(12, 74, 110)',
+          dark: 'rgb(2, 132, 199)',
+          light: 'rgb(56, 200, 255)',
         },
+        // Colores secundarios y de apoyo
         secondary: {
-          light: rgb(61, 88, 149),    // Un tono más claro
-          DEFAULT: rgb(41, 59, 100),   // Azul oscuro principal (para sidebar bg)
-          dark: rgb(27, 39, 67),     // Un tono más oscuro
+          DEFAULT: 'rgb(51, 65, 85)', // Gris azulado para sidebar
+          50: 'rgb(248, 250, 252)',
+          100: 'rgb(241, 245, 249)',
+          200: 'rgb(226, 232, 240)',
+          300: 'rgb(203, 213, 225)',
+          400: 'rgb(148, 163, 184)',
+          500: 'rgb(100, 116, 139)',
+          600: 'rgb(71, 85, 105)',
+          700: 'rgb(51, 65, 85)',
+          800: 'rgb(30, 41, 59)',
+          900: 'rgb(15, 23, 42)',
+          light: 'rgb(71, 85, 105)',
         },
-        // --- Colores Base (Light Mode) ---
-        'light-text': {
-          DEFAULT: '#2C3E50', // Texto oscuro principal
-          medium: '#546E7A',
-          light: '#78909C',
+        // Colores de fondo
+        bg: {
+          light: 'rgb(249, 250, 251)',
+          dark: 'rgb(17, 24, 39)',
+          card: {
+            light: 'rgb(255, 255, 255)',
+            dark: 'rgb(31, 41, 55)',
+          }
         },
-        'light-bg': {
-          DEFAULT: '#F8F9FA', // Fondo principal claro
-          card: '#FFFFFF',   // Fondo de tarjetas/elementos
+        // Colores de texto
+        text: {
+          light: {
+            base: 'rgb(17, 24, 39)',
+            medium: 'rgb(75, 85, 99)',
+            muted: 'rgb(107, 114, 128)',
+          },
+          dark: {
+            base: 'rgb(243, 244, 246)',
+            medium: 'rgb(209, 213, 219)',
+            muted: 'rgb(156, 163, 175)',
+          }
         },
-        'light-border': '#D9E2EC',
-        // --- Colores Base (Dark Mode) ---
-        'dark-text': {
-          DEFAULT: '#E0E6ED', // Texto claro principal
-          medium: '#B8C4CF',
-          light: '#8D99A4',
-        },
-        'dark-bg': {
-          DEFAULT: '#1A2634', // Fondo principal oscuro
-          card: '#242F3F',   // Fondo de tarjetas/elementos oscuros
-        },
-        'dark-border': '#3A4858',
-        // --- Colores de Estado ---
-        danger: '#E63946',
-        warning: '#F9A826',
-        success: '#2DC653',
-        info: '#5BC0EB',
+        // Colores de borde
+        border: {
+          light: 'rgb(229, 231, 235)',
+          dark: 'rgb(55, 65, 81)',
+        }
       },
-      borderRadius: { /* ...tus valores... */ },
-      boxShadow: { /* ...tus valores... */ },
-      keyframes: { /* ...tus valores... */ },
-      animation: { /* ...tus valores... */ },
     },
   },
   plugins: [],
-};
-export default config;
+}
