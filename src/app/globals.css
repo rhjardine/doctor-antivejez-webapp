@@ -1,144 +1,190 @@
-/* src/styles/globals.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* src/styles/globals.css */ 
+@tailwind base; 
+@tailwind components; 
+@tailwind utilities; 
 
-:root {
-  /* --- Colores Corporativos --- */
-  --color-primary: 35, 188, 239; /* Azul Principal RGB */
-  --color-primary-light: 93, 211, 248; /* Azul Claro RGB */
-  --color-primary-dark: 28, 151, 191; /* Azul Oscuro RGB */
-  --color-secondary: 41, 59, 100; /* Azul Sidebar RGB */
-  --color-secondary-light: 61, 88, 149; /* Azul Sidebar Claro RGB */
+:root { 
+  /* --- Colores Corporativos Principales --- */ 
+  --color-primary-rgb: 35, 188, 239; /* Azul Cielo Principal (RGB) */ 
+  --color-primary-darker-rgb: 28, 151, 191; /* Azul Cielo Más Oscuro (RGB) */ 
   
-  /* --- Colores Base --- */
-  --color-text-base: 44, 62, 80; /* #2C3E50 */
-  --color-text-muted: 102, 102, 102; /* #666666 */
-  --color-bg-base: 248, 249, 250; /* #F8F9FA */
-  --color-bg-card: 255, 255, 255; /* #FFFFFF */
-  --color-border-base: 224, 224, 224; /* #E0E0E0 */
+  --color-secondary-rgb: 41, 59, 100; /* Azul Oscuro Principal para Sidebar (RGB) */ 
+  --color-secondary-light-rgb: 61, 88, 149; /* Para bordes o hovers en el sidebar (RGB) */ 
   
-  /* --- Colores Estado --- */
-  --color-success: 22, 163, 74; /* Verde */
-  --color-warning: 245, 158, 11; /* Amarillo */
-  --color-danger: 220, 38, 38; /* Rojo */
-  --color-info: 59, 130, 246; /* Azul */
-}
+  /* --- Colores de Texto (Modo Claro) --- */ 
+  --color-text-base-light: 44, 62, 80;    /* #2C3E50 - Casi negro, buen contraste */ 
+  --color-text-muted-light: 102, 102, 102;  /* #6666 - Gris para texto secundario */ 
+  --color-text-on-primary-light: 255, 255, 255; /* Blanco para texto sobre fondo primario */ 
+  --color-text-on-secondary-light: 229, 231, 235; /* gray-200 para texto sobre fondo secundario (sidebar) */ 
+  
+  /* --- Colores de Fondo (Modo Claro) --- */ 
+  --color-bg-page-light: 248, 250, 252;   /* Más suave que gray-100 */ 
+  --color-bg-card-light: 255, 255, 255;    /* white */ 
+  
+  /* --- Colores de Borde (Modo Claro) --- */ 
+  --color-border-light: 226, 232, 240; /* Un gris claro para bordes */ 
+  
+  /* --- Colores de Estado (RGB para opacidad) --- */ 
+  --color-success-rgb: 22, 163, 74; 
+  --color-warning-rgb: 245, 158, 11; 
+  --color-danger-rgb: 220, 38, 38; 
+  --color-info-rgb: 59, 130, 246; 
+  
+  /* Fuente */ 
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; 
+} 
 
-.dark {
-  /* --- Colores Base Dark --- */
-  --color-text-base: 229, 231, 235; /* #E5E7EB */
-  --color-text-muted: 156, 163, 175; /* #9CA3AF */
-  --color-bg-base: 17, 24, 39; /* #111827 */
-  --color-bg-card: 31, 41, 55; /* #1F2937 */
-  --color-border-base: 55, 65, 81; /* #374151 */
-}
+.dark { 
+  /* --- Colores de Texto (Modo Oscuro) --- */ 
+  --color-text-base-dark: 229, 231, 235;   /* gray-200 */ 
+  --color-text-muted-dark: 156, 163, 175;  /* gray-400 */ 
+  --color-text-on-primary-dark: 255, 255, 255; /* Blanco sobre primario */ 
+  --color-text-on-secondary-dark: 229, 231, 235; /* gray-200 */ 
+  
+  /* --- Colores de Fondo (Modo Oscuro) --- */ 
+  --color-bg-page-dark: 15, 23, 42;    /* slate-900 */ 
+  --color-bg-card-dark: 30, 41, 59;    /* slate-800 */ 
+  
+  /* --- Colores de Borde (Modo Oscuro) --- */ 
+  --color-border-dark: 51, 65, 85;    /* slate-700 */ 
+} 
 
-@layer base {
-  html, body {
-    overflow-x: hidden;
-    max-width: 100vw;
-    box-sizing: border-box;
-  }
-  
-  *, *::before, *::after {
-    box-sizing: inherit;
-  }
-  
-  body {
-    background-color: rgb(var(--color-bg-base));
-    color: rgb(var(--color-text-base));
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    position: relative;
-  }
-  
-  /* Estilos para scrollbar (adaptados para ser menos intrusivos) */
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(var(--color-primary), 0.5) transparent;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: rgba(var(--color-primary), 0.5);
-    border-radius: 20px;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(var(--color-primary), 0.7);
-  }
-}
+* { 
+  box-sizing: border-box; 
+} 
 
-@layer components {
-  /* Botones Corporativos */
-  .btn-primary {
-    @apply bg-[#23BCEF] text-white hover:bg-[#23BCEF]/90 focus:outline-none focus:ring-2 focus:ring-[#23BCEF]/50 transition-colors font-semibold;
-  }
-  
-  .btn-secondary {
-    @apply bg-[#293B64] text-white hover:bg-[#3D5895] focus:outline-none focus:ring-2 focus:ring-[#293B64]/50 transition-colors font-semibold;
-  }
-  
-  /* Contenedores seguros (sin overflow) */
-  .container-safe {
-    @apply w-full max-w-full overflow-hidden;
-  }
-  
-  /* Tarjetas */
-  .card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700;
-  }
-  
-  /* Tablas responsivas */
-  .table-container {
-    @apply w-full overflow-x-auto;
-  }
-  
-  /* Headers de sección */
-  .section-header {
-    @apply text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 flex items-center gap-2;
-  }
-}
+html { 
+  scroll-behavior: smooth; 
+  overflow-x: hidden; 
+} 
 
-/* Fix para el contenido principal */
-#main-content-area {
-  width: 100%;
-  position: relative;
-  z-index: 1;
-}
+body { 
+  font-family: var(--font-sans); 
+  background-color: rgb(var(--color-bg-page-light)); 
+  color: rgb(var(--color-text-base-light)); 
+  -webkit-font-smoothing: antialiased; 
+  -moz-osx-font-smoothing: grayscale; 
+  transition: background-color 0.3s ease, color 0.3s ease; 
+  overflow-x: hidden; 
+  max-width: 100vw; 
+  width: 100%; 
+} 
 
-@media (min-width: 768px) {
-  #main-content-area {
-    width: calc(100% - 64px);
-    margin-left: 64px;
-  }
-}
+.dark body { 
+  background-color: rgb(var(--color-bg-page-dark)); 
+  color: rgb(var(--color-text-base-dark)); 
+} 
 
-@media (min-width: 768px) {
-  .sidebar-expanded #main-content-area {
-    width: calc(100% - 224px);
-    margin-left: 224px;
-  }
-}
+/* Prevenir overflow en todos los contenedores principales */ 
+#__next, 
+#root, 
+main { 
+  max-width: 100vw; 
+  overflow-x: hidden; 
+  width: 100%; 
+} 
 
-/* Para asegurar que los elementos se muestran correctamente */
-.hidden-overflow {
-  overflow: hidden;
-}
+/* Asegurar que todos los grids respeten el contenedor */ 
+.grid { 
+  width: 100%; 
+  max-width: 100%; 
+} 
 
-.max-w-content {
-  max-width: 100%;
-  width: 100%;
+/* Prevenir que las cards se desborden */ 
+.grid > * { 
+  min-width: 0; 
+  max-width: 100%; 
+} 
+
+/* Estilos base para scrollbar mejorados */ 
+.scrollbar-thin { 
+  scrollbar-width: thin; 
+  scrollbar-color: rgba(var(--color-primary-rgb), 0.5) transparent; 
+} 
+
+.scrollbar-thin::-webkit-scrollbar { 
+  width: 6px; 
+} 
+
+.scrollbar-thin::-webkit-scrollbar-track { 
+  background: transparent; 
+} 
+
+.scrollbar-thin::-webkit-scrollbar-thumb { 
+  background: linear-gradient(to bottom, rgb(var(--color-primary-rgb)), rgb(var(--color-secondary-rgb))); 
+  border-radius: 3px; 
+} 
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { 
+  background: linear-gradient(to bottom, rgba(var(--color-primary-rgb), 0.8), rgba(var(--color-secondary-rgb), 0.8));
+} 
+
+* { 
+  box-sizing: border-box; 
+} 
+
+html { 
+  scroll-behavior: smooth; 
+  overflow-x: hidden; 
+} 
+
+body { 
+  font-family: var(--font-sans); 
+  background-color: rgb(var(--color-bg-page-light)); 
+  color: rgb(var(--color-text-base-light)); 
+  -webkit-font-smoothing: antialiased; 
+  -moz-osx-font-smoothing: grayscale; 
+  transition: background-color 0.3s ease, color 0.3s ease; 
+  overflow-x: hidden; 
+  max-width: 100vw; 
+  width: 100%; 
+} 
+
+.dark body { 
+  background-color: rgb(var(--color-bg-page-dark)); 
+  color: rgb(var(--color-text-base-dark)); 
+} 
+
+/* Prevenir overflow en todos los contenedores principales */ 
+#__next, 
+#root, 
+main { 
+  max-width: 100vw; 
+  overflow-x: hidden; 
+  width: 100%; 
+} 
+
+/* Asegurar que todos los grids respeten el contenedor */ 
+.grid { 
+  width: 100%; 
+  max-width: 100%; 
+} 
+
+/* Prevenir que las cards se desborden */ 
+.grid > * { 
+  min-width: 0; 
+  max-width: 100%; 
+} 
+
+/* Estilos base para scrollbar mejorados */ 
+.scrollbar-thin { 
+  scrollbar-width: thin; 
+  scrollbar-color: rgba(var(--color-primary-rgb), 0.5) transparent; 
+} 
+
+.scrollbar-thin::-webkit-scrollbar { 
+  width: 6px; 
+} 
+
+.scrollbar-thin::-webkit-scrollbar-track { 
+  background: transparent; 
+} 
+
+.scrollbar-thin::-webkit-scrollbar-thumb { 
+  background: linear-gradient(to bottom, rgb(var(--color-primary-rgb)), rgb(var(--color-secondary-rgb))); 
+  border-radius: 3px; 
+} 
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { 
+  background: linear-gradient(to bottom, rgba(var(--color-primary-rgb), 0.8), rgba(var(--color-secondary-rgb), 0.8));
 }
