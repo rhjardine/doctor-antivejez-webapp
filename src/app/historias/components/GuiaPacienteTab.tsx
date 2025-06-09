@@ -10,19 +10,22 @@ import {
 import CollapsibleSection from '@/components/GuiaPaciente/CollapsibleSection';
 import CheckboxItem from '@/components/GuiaPaciente/CheckboxItem';
 import SendGuideModal from '@/components/GuiaPaciente/SendGuideModal';
+import { FormGroupTextarea, FormGroupInput } from '@/components/ui/form-components';
 import { 
   GuiaPacienteFormData, NutraceuticoItemData, TerapiaItem, FlorDeBachItem,
   FREQUENCY_OPTIONS_PRIMARY, FREQUENCY_OPTIONS_SECONDARY
 } from '@/types/guiaPaciente';
-import { v4 as uuidv4 } from 'uuid'; // Para generar IDs únicos para nuevos ítems
+import { v4 as uuidv4 } from 'uuid';
+import { cn } from '@/lib/utils'; // Utility para combinar clases
 
 interface GuiaPacienteTabProps {
-  patientId: string; // O el objeto Patient completo
-  initialGuideData?: GuiaPacienteFormData | null; // Para cargar una guía existente
-  onSaveGuide: (data: GuiaPacienteFormData) => Promise<void>;
+  patientId?: string;
+  patientData?: any; // Para mantener compatibilidad con HistoryTabs
+  initialGuideData?: GuiaPacienteFormData | null;
+  onSaveGuide?: (data: GuiaPacienteFormData) => Promise<void>;
 }
 
-// Datos iniciales para los selects y checkboxes (ejemplos)
+// Datos iniciales para los selects y checkboxes
 const REMOCION_ITEMS_DATA: Omit<NutraceuticoItemData, 'checked' | 'qty' | 'freq' | 'supplement'>[] = [
   { id: 'remocion_aceite_ricino', label: 'Aceite de ricino', isRemocion: true, doseInfo: 'Dosis: 30 CC (adultos) / 15 CC (niños y ancianos) - Una vez en la noche' },
   { id: 'remocion_leche_magnesia', label: 'Leche de magnesia', isRemocion: true, doseInfo: 'Dosis: 30 CC (adultos) / 15 CC (niños y ancianos) - Una vez en la noche' },
@@ -30,40 +33,41 @@ const REMOCION_ITEMS_DATA: Omit<NutraceuticoItemData, 'checked' | 'qty' | 'freq'
 ];
 
 const TERAPIAS_DATA: Omit<TerapiaItem, 'checked'>[] = [
-  { id: 'terapia_nino', label: 'Niño' }, { id: 'terapia_antiage', label: 'Anti-envejecimiento' },
-  { id: 'terapia_metabolica', label: 'Metabólica' }, { id: 'terapia_citostatica', label: 'Citostática' },
+  { id: 'terapia_nino', label: 'Niño' }, 
+  { id: 'terapia_antiage', label: 'Anti-envejecimiento' },
+  { id: 'terapia_metabolica', label: 'Metabólica' }, 
+  { id: 'terapia_citostatica', label: 'Citostática' },
   { id: 'terapia_renal', label: 'Renal' },
 ];
 
-// ... (Define arrays similares para NUTRACEUTICOS_PRIMARIOS_DATA, FLORES_DE_BACH_DATA, etc.
-//      basados en los <label> de tu HTML original. Cada uno con 'id' y 'label')
-
-// Ejemplo para Nutraceuticos Primarios
 const NUTRACEUTICOS_PRIMARIOS_DATA: Omit<NutraceuticoItemData, 'checked' | 'qty' | 'freq' | 'supplement'>[] = [
-    { id: 'nutra_mega_gh4', label: 'MegaGH4 (Fórmula Antienvejecimiento)' },
-    { id: 'nutra_stemcell', label: 'StemCell Enhancer (Revierte la oxidación)' },
-    { id: 'nutra_transfer', label: 'Transfer Tri Factor (Modulador celular)' },
-    { id: 'nutra_telomeres', label: 'Telomeros (Activador de la Telomerasa)' },
+  { id: 'nutra_mega_gh4', label: 'MegaGH4 (Fórmula Antienvejecimiento)' },
+  { id: 'nutra_stemcell', label: 'StemCell Enhancer (Revierte la oxidación)' },
+  { id: 'nutra_transfer', label: 'Transfer Tri Factor (Modulador celular)' },
+  { id: 'nutra_telomeres', label: 'Telomeros (Activador de la Telomerasa)' },
 ];
 
-
 const initialFormState: GuiaPacienteFormData = {
-  patientName: 'Isabel Romero', // Debería venir de props o contexto
+  patientName: 'Isabel Romero',
   date: new Date().toISOString().split('T')[0],
   remocionItems: REMOCION_ITEMS_DATA.map(item => ({ ...item, checked: false, qty: '', freq: '', supplement: '' })),
   remocionCucharadas: '',
   remocionDetoxSemanas: '',
   terapiasSeleccionadas: TERAPIAS_DATA.map(item => ({ ...item, checked: false })),
   nutraceuticosPrimarios: NUTRACEUTICOS_PRIMARIOS_DATA.map(item => ({ ...item, checked: false, qty: '', freq: '', supplement: '' })),
-  activadorMetabolico: [/* ... define el item para Bioterápico + Bach ... */],
-  floresDeBach: [/* ... mapea FLORES_DE_BACH_DATA ... */],
-  nutraceuticosSecundarios: [/* ... mapea NUTRACEUTICOS_SECUNDARIOS_DATA ... */],
-  nutraceuticosComplementarios: [/* ... mapea NUTRACEUTICOS_COMPLEMENTARIOS_DATA ... */],
-  sueros: [/* ... mapea SUEROS_DATA ... */],
+  activadorMetabolico: [],
+  floresDeBach: [],
+  nutraceuticosSecundarios: [],
+  nutraceuticosComplementarios: [],
+  sueros: [],
 };
 
-
-export default function GuiaPacienteTab({ patientId, initialGuideData, onSaveGuide }: GuiaPacienteTabProps) {
+export default function GuiaPacienteTab({ 
+  patientId, 
+  patientData, 
+  initialGuideData, 
+  onSaveGuide = async () => {} 
+}: GuiaPacienteTabProps) {
   const [formData, setFormData] = useState<GuiaPacienteFormData>(initialGuideData || initialFormState);
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
@@ -71,21 +75,18 @@ export default function GuiaPacienteTab({ patientId, initialGuideData, onSaveGui
   useEffect(() => {
     if (initialGuideData) {
       setFormData(initialGuideData);
-    } else {
-      // Si necesitas cargar el nombre del paciente dinámicamente:
-      // setFormData(prev => ({ ...prev, patientName: loadedPatientNameFromApi }));
+    } else if (patientData?.nombre) {
+      setFormData(prev => ({ ...prev, patientName: patientData.nombre }));
     }
-  }, [initialGuideData]);
+  }, [initialGuideData, patientData]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    // Si es un checkbox dentro de un grupo, necesitarás una lógica más específica para actualizar el array correcto
     if (type === 'checkbox') {
-        // Lógica para actualizar arrays de checkboxes (terapias, floresDeBach)
-        // Esta parte se vuelve compleja y depende de cómo estructures el estado para ellos
-    } else {
-        setFormData(prev => ({ ...prev, [name]: value }));
+      // Lógica para checkboxes se maneja en funciones específicas
+      return;
     }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleNutraceuticoChange = (
@@ -100,20 +101,18 @@ export default function GuiaPacienteTab({ patientId, initialGuideData, onSaveGui
   
   const handleTerapiaChange = (updatedTerapia: TerapiaItem) => {
     setFormData(prev => ({
-        ...prev,
-        terapiasSeleccionadas: prev.terapiasSeleccionadas.map(t => t.id === updatedTerapia.id ? updatedTerapia : t)
+      ...prev,
+      terapiasSeleccionadas: prev.terapiasSeleccionadas.map(t => t.id === updatedTerapia.id ? updatedTerapia : t)
     }));
   };
 
-  // ... (Funciones para añadir dinámicamente ítems a cada sección de nutracéuticos/sueros)
-  // Ejemplo:
   const addDynamicItem = (
     sectionKey: keyof Pick<GuiaPacienteFormData, 'nutraceuticosPrimarios' | 'activadorMetabolico' | 'nutraceuticosSecundarios' | 'nutraceuticosComplementarios' | 'sueros'>,
     baseLabel: string
   ) => {
     const newItem: NutraceuticoItemData = {
       id: `${sectionKey}_${uuidv4()}`,
-      label: `Nuevo ${baseLabel}`, // El usuario debería poder editar esto
+      label: `Nuevo ${baseLabel}`,
       checked: true,
       qty: '',
       freq: '',
@@ -125,23 +124,24 @@ export default function GuiaPacienteTab({ patientId, initialGuideData, onSaveGui
     }));
   };
 
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Validaciones si es necesario
-    onSaveGuide(formData);
-    setIsSendModalOpen(true); // Abrir modal después de guardar (o después de confirmación de API)
+    try {
+      await onSaveGuide(formData);
+      setIsSendModalOpen(true);
+    } catch (error) {
+      console.error('Error al guardar guía:', error);
+      alert('Error al guardar la guía del paciente');
+    }
   };
 
   const generatePreviewHTML = (): string => {
-    // Lógica similar a tu función JS original para generar el HTML de la vista previa
-    // Usando los datos de `formData`
     let html = `<p><strong>Paciente:</strong> ${formData.patientName}</p>`;
     html += `<p><strong>Fecha:</strong> ${new Date(formData.date).toLocaleDateString('es-ES')}</p><hr/>`;
     
     html += '<h4>Fase de Remoción:</h4><ul>';
     formData.remocionItems.filter(i => i.checked).forEach(item => {
-        html += `<li>${item.label}: ${item.doseInfo || ''}</li>`;
+      html += `<li>${item.label}: ${item.doseInfo || ''}</li>`;
     });
     if (formData.remocionCucharadas) html += `<li>Cucharadas al acostarse: ${formData.remocionCucharadas}</li>`;
     if (formData.remocionDetoxSemanas) html += `<li>Detoxificación Alcalina: ${formData.remocionDetoxSemanas} semana(s)</li>`;
@@ -149,23 +149,16 @@ export default function GuiaPacienteTab({ patientId, initialGuideData, onSaveGui
     if (terapiasActivas.length) html += `<li>Terapias: ${terapiasActivas.join(', ')}</li>`;
     html += '</ul>';
 
-    // ... (Repetir para las otras secciones: Primarios, Activador, Secundarios, Complementarios, Sueros)
-    // Adaptando la lógica para obtener los datos de los arrays correspondientes en formData
-    // y formateando el string HTML.
-    
+    // Agregar más secciones según sea necesario
     return html;
   };
 
-  // Estilos de Tailwind para replicar los de tu CSS
-  const containerClasses = "w-full max-w-5xl mx-auto p-6 bg-white dark:bg-bg-card-dark rounded-lg shadow-xl";
-  const patientInfoBarClasses = "bg-primary text-white p-4 sm:p-5 rounded-lg mb-6 flex flex-col sm:flex-row justify-between items-center gap-3";
-  const actionButtonContainerClasses = "flex flex-col sm:flex-row justify-center sm:justify-end gap-3 mt-8 pt-6 border-t border-border-light dark:border-border-dark";
+  // Estilos
+  const containerClasses = "w-full max-w-5xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl";
+  const patientInfoBarClasses = "bg-blue-600 text-white p-4 sm:p-5 rounded-lg mb-6 flex flex-col sm:flex-row justify-between items-center gap-3";
+  const actionButtonContainerClasses = "flex flex-col sm:flex-row justify-center sm:justify-end gap-3 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700";
   const btnClasses = "px-6 py-2.5 rounded-full font-semibold text-sm sm:text-base inline-flex items-center justify-center gap-2 transition-all hover:opacity-90 shadow-md hover:shadow-lg";
-  const btnAddClasses = "bg-success text-white hover:bg-success/90 text-xs sm:text-sm px-4 py-2 mt-2 mb-3";
-  const mealSectionClasses = "bg-primary rounded-lg p-4 sm:p-5 mb-6 shadow-lg";
-  const mealSectionTitleClasses = "text-white text-lg sm:text-xl font-semibold flex items-center gap-2 mb-4";
-  const mealOptionsContainerClasses = "bg-gray-50 dark:bg-gray-800 rounded-md p-3 sm:p-4 mb-3";
-
+  const btnAddClasses = "bg-green-600 text-white hover:bg-green-700 text-xs sm:text-sm px-4 py-2 mt-2 mb-3 rounded";
 
   return (
     <div className={containerClasses}>
@@ -176,18 +169,25 @@ export default function GuiaPacienteTab({ patientId, initialGuideData, onSaveGui
             <FontAwesomeIcon icon={faUser} className="w-5 h-5" />
             <label htmlFor="patient-name-guide" className="font-semibold">Nombre del Paciente</label>
             <input 
-              type="text" id="patient-name-guide" name="patientName" 
-              value={formData.patientName} onChange={handleInputChange}
+              type="text" 
+              id="patient-name-guide" 
+              name="patientName" 
+              value={formData.patientName} 
+              onChange={handleInputChange}
               placeholder="Ingrese nombre"
-              className="p-2 rounded-md bg-white/90 text-secondary text-sm focus:ring-2 focus:ring-white"
+              className="p-2 rounded-md bg-white/90 text-gray-800 text-sm focus:ring-2 focus:ring-white"
             />
           </div>
           <div className="flex items-center gap-2">
             <FontAwesomeIcon icon={faCalendarAlt} className="w-5 h-5" />
             <label htmlFor="date-guide">Fecha</label>
-            <input type="date" id="date-guide" name="date" 
-              value={formData.date} onChange={handleInputChange}
-              className="p-2 rounded-md bg-white/90 text-secondary text-sm focus:ring-2 focus:ring-white"
+            <input 
+              type="date" 
+              id="date-guide" 
+              name="date" 
+              value={formData.date} 
+              onChange={handleInputChange}
+              className="p-2 rounded-md bg-white/90 text-gray-800 text-sm focus:ring-2 focus:ring-white"
             />
           </div>
         </div>
@@ -201,11 +201,12 @@ export default function GuiaPacienteTab({ patientId, initialGuideData, onSaveGui
                 item={item} 
                 onChange={(updatedItem) => handleNutraceuticoChange('remocionItems', updatedItem)}
                 isRemocionItem={true}
-                showQuantity={false} // No tienen cantidad editable
-                showFrequency={false} // No tienen frecuencia editable
+                showQuantity={false}
+                showFrequency={false}
               />
             ))}
           </div>
+          
           <FormGroupTextarea
             label="Cucharadas al acostarse (1 sola vez):"
             name="remocionCucharadas"
@@ -213,9 +214,9 @@ export default function GuiaPacienteTab({ patientId, initialGuideData, onSaveGui
             onChange={handleInputChange}
             rows={2}
             placeholder="Indicar producto y dosis..."
-            labelClassName="text-sm font-medium text-text-light-base dark:text-text-dark-base mt-3"
-            textareaClassName="mt-1"
+            className="mt-3"
           />
+          
           <FormGroupInput
             label="Detoxificación Alcalina Vegetariana (Semanas):"
             name="remocionDetoxSemanas"
@@ -225,11 +226,11 @@ export default function GuiaPacienteTab({ patientId, initialGuideData, onSaveGui
             min="0"
             step="1"
             placeholder="Ej: 1"
-            labelClassName="text-sm font-medium text-text-light-base dark:text-text-dark-base mt-3"
-            inputClassName="mt-1"
+            className="mt-3"
           />
+          
           <div className="mt-4">
-            <h4 className="text-sm font-semibold mb-2 text-text-light-base dark:text-text-dark-base">Terapias Aplicadas:</h4>
+            <h4 className="text-sm font-semibold mb-2 text-gray-800 dark:text-white">Terapias Aplicadas:</h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {formData.terapiasSeleccionadas.map(terapia => (
                 <label key={terapia.id} className="flex items-center space-x-2 text-sm cursor-pointer">
@@ -238,7 +239,7 @@ export default function GuiaPacienteTab({ patientId, initialGuideData, onSaveGui
                     name={terapia.id} 
                     checked={terapia.checked} 
                     onChange={(e) => handleTerapiaChange({...terapia, checked: e.target.checked })}
-                    className="h-4 w-4 text-primary rounded border-gray-300 focus:ring-primary"
+                    className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                   />
                   <span>{terapia.label}</span>
                 </label>
@@ -260,20 +261,21 @@ export default function GuiaPacienteTab({ patientId, initialGuideData, onSaveGui
               />
             ))}
           </div>
-           <button type="button" className={cn(btnAddClasses, "mt-3")} onClick={() => addDynamicItem('nutraceuticosPrimarios', 'Nutracéutico Primario')}>
+          <button 
+            type="button" 
+            className={btnAddClasses} 
+            onClick={() => addDynamicItem('nutraceuticosPrimarios', 'Nutracéutico Primario')}
+          >
             <FontAwesomeIcon icon={faPlus} className="mr-1.5"/> Añadir Nutracéutico Primario
           </button>
         </CollapsibleSection>
 
-        {/* TODO: Implementar secciones para Activador Metabólico (con Flores de Bach), Secundarios, Complementarios y Sueros */}
-        {/* Sigue el mismo patrón que Nutraceuticos Primarios, usando CollapsibleSection y CheckboxItem */}
-        {/* Para Flores de Bach, podrías tener un CheckboxItem sin cantidad/frecuencia o un componente más simple */}
-
-
-        {/* Vista Previa (Opcional, si quieres mantenerla) */}
+        {/* Vista Previa */}
         {isPreviewVisible && (
-          <section className="mt-6 p-4 border border-border-light dark:border-border-dark rounded-lg bg-gray-50 dark:bg-gray-800">
-            <h3 className="text-lg font-semibold mb-3 text-primary"><FontAwesomeIcon icon={faEye} className="mr-2"/> Vista Previa de la Guía</h3>
+          <section className="mt-6 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
+            <h3 className="text-lg font-semibold mb-3 text-blue-600">
+              <FontAwesomeIcon icon={faEye} className="mr-2"/> Vista Previa de la Guía
+            </h3>
             <div dangerouslySetInnerHTML={{ __html: generatePreviewHTML() }} className="prose prose-sm dark:prose-invert max-w-none" />
           </section>
         )}
@@ -283,19 +285,19 @@ export default function GuiaPacienteTab({ patientId, initialGuideData, onSaveGui
           <button 
             type="button" 
             onClick={() => setIsPreviewVisible(!isPreviewVisible)}
-            className={cn(btnClasses, "bg-secondary text-white hover:bg-secondary-light")}
+            className={cn(btnClasses, "bg-gray-600 text-white hover:bg-gray-700")}
           >
             <FontAwesomeIcon icon={faEye} /> {isPreviewVisible ? 'Ocultar' : 'Vista Previa'}
           </button>
           <button 
             type="submit" 
-            className={cn(btnClasses, "bg-primary text-white hover:bg-primary-darker")}
+            className={cn(btnClasses, "bg-blue-600 text-white hover:bg-blue-700")}
           >
             <FontAwesomeIcon icon={faPaperPlane} /> Guardar y Enviar
           </button>
           <button 
             type="button" 
-            onClick={() => { /* Lógica de impresión */ window.print(); }}
+            onClick={() => window.print()}
             className={cn(btnClasses, "bg-gray-600 text-white hover:bg-gray-700")}
           >
             <FontAwesomeIcon icon={faPrint} /> Imprimir

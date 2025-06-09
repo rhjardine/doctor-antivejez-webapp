@@ -2,6 +2,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
+interface DatabaseError {
+  code: string;
+  errno: number;
+  sqlMessage: string;
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -29,9 +35,23 @@ export async function GET(
     
     return NextResponse.json(histories[0]);
   } catch (error) {
-    console.error(`Error en GET /api/patients/${params.id}/history:`, error);
+    console.error('Error al crear paciente:', error);
+  
+    // Manejo seguro del error unknown
+    if (error && typeof error === 'object' && 'code' in error) {
+      const dbError = error as { code: string; [key: string]: any };
+      
+      // Si es un error de duplicado (violación de clave única)
+      if (dbError.code === 'ER_DUP_ENTRY') {
+        return NextResponse.json(
+          { error: 'Ya existe un paciente con esta identificación' },
+          { status: 409 }
+        );
+      }
+    }
+  
     return NextResponse.json(
-      { error: 'Error al obtener la historia clínica' },
+      { error: 'Error interno del servidor' },
       { status: 500 }
     );
   }

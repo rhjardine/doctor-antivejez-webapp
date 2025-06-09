@@ -17,8 +17,24 @@ export interface SelectOption {
 // ---------------------------------------------------------------------------------
 
 // --- Constantes existentes ---
-export const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
-// export const ACCEPTED_FILE_TYPES = { /* ... */ }; // Comentado si no se usa o está incompleto
+export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+export const ACCEPTED_FILE_TYPES = {
+  'application/pdf': '.pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+  'application/msword': '.doc',
+  'text/plain': '.txt',
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/gif': '.gif'
+};
+
+export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
+export const ALLOWED_DOCUMENT_TYPES = [
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/msword',
+  'text/plain'
+];
 // ---------------------------
 
 // --- Interfaz para NAV_ITEMS (con IconProp) ---
@@ -129,4 +145,5 @@ export const PROFESIONAL_ROLES: ProfesionalRolConstant[] = [
 export const LIMITED_ROLES_PROFESIONALES: string[] = ['coach']; 
 export const FORM_LIMIT: number = 50;
 export const FORM_LIMIT_WARNING_THRESHOLD: number = 40;
+
 // --- FIN DE CONSTANTES PARA PROFESIONALES ---

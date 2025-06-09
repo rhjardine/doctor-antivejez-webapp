@@ -57,3 +57,32 @@ export function getHealthStatus(value: number, normal: { min: number, max: numbe
   if (value > normal.max) return 'high';
   return 'normal';
 }
+
+export function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Función para obtener el ícono del archivo
+export function getFileIcon(fileType: string): string {
+  switch (fileType) {
+    case 'application/pdf':
+      return '📄';
+    case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+    case 'application/msword':
+      return '📝';
+    case 'text/plain':
+      return '📋';
+    case 'image/jpeg':
+    case 'image/png':
+    case 'image/gif':
+      return '🖼️';
+    default:
+      return '📎';
+  }
+}

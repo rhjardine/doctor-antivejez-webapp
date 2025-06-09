@@ -1,6 +1,11 @@
 // src/utils/biofisicaBoardCalculations.ts
 import { BoardData, BiofisicaField } from '@/app/historias/types/biofisica';
 
+export const calculationBoards: BoardData[] = [
+  // Aquí irían los datos de referencia para los cálculos
+  // Por ahora dejamos un array vacío que se llenará desde el backend
+];
+
 // Obtener el nombre del campo de grasa según género
 export function getFatName(formType: number): string {
   switch (formType) {

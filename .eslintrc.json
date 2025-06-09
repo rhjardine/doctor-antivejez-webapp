@@ -1,0 +1,76 @@
+{
+  "root": true, // Importante para que ESLint no busque configuraciones en carpetas superiores
+  "parser": "@typescript-eslint/parser", // Especifica el parser de TypeScript
+  "parserOptions": {
+    "ecmaVersion": 2020, // O "latest" si prefieres
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true // Habilitar parsing de JSX
+    },
+    "project": "./tsconfig.json", // Ruta a tu tsconfig.json, crucial para reglas basadas en tipos
+    "warnOnUnsupportedTypeScriptVersion": false // Puedes ponerlo en true si quieres advertencias sobre la versión de TS
+  },
+  "plugins": [
+    "@typescript-eslint", // Plugin para reglas específicas de TypeScript
+    "react",              // Plugin para reglas específicas de React
+    "react-hooks",        // Plugin para reglas de Hooks de React
+    "jsx-a11y"            // Plugin para reglas de accesibilidad en JSX
+  ],
+  "extends": [
+    "eslint:recommended",                     // Reglas base recomendadas por ESLint
+    "plugin:@typescript-eslint/recommended",  // Reglas recomendadas de @typescript-eslint/eslint-plugin
+    // Descomenta la siguiente línea si quieres reglas más estrictas que requieren información de tipos (puede hacer el linting más lento)
+    // "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:react/recommended",               // Reglas recomendadas para React
+    "plugin:react/jsx-runtime",             // Para el nuevo JSX transform (no necesitas importar React en cada archivo)
+    "plugin:react-hooks/recommended",         // Reglas recomendadas para Hooks de React
+    "plugin:jsx-a11y/recommended",            // Reglas recomendadas de accesibilidad
+    "next/core-web-vitals"                  // Configuración esencial de Next.js (incluye reglas de Next.js y core-web-vitals)
+  ],
+  "env": {
+    "browser": true,    // Variables globales del navegador (window, document, etc.)
+    "es2020": true,     // Habilitar características de ES2020
+    "node": true,       // Variables globales de Node.js (útil para archivos en pages/api, next.config.js)
+    "jest": true        // Si usas Jest para pruebas, descomenta esto
+  },
+  "settings": {
+    "react": {
+      "version": "detect" // Detectar automáticamente la versión de React
+    }
+  },
+  "rules": {
+    // Tus reglas personalizadas o sobreescrituras:
+
+    // TypeScript
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }], // Advierte sobre variables no usadas, permite _ como prefijo para ignorar
+    "@typescript-eslint/no-explicit-any": "warn", // Advierte sobre el uso de 'any'
+    "@typescript-eslint/explicit-module-boundary-types": "off", // Puedes encenderlo si quieres tipos explícitos en los límites de módulos
+    "@typescript-eslint/no-non-null-assertion": "warn", // Advierte sobre el uso de '!' para aserciones no nulas
+
+    // React
+    "react/prop-types": "off", // No es necesario con TypeScript
+    "react/react-in-jsx-scope": "off", // No es necesario con el nuevo JSX transform
+    "react-hooks/rules-of-hooks": "error", // Asegura el cumplimiento de las reglas de Hooks
+    "react-hooks/exhaustive-deps": "warn", // Advierte sobre dependencias faltantes en Hooks
+
+    // Next.js (ejemplos, puedes no necesitarlos si next/core-web-vitals ya los cubre bien)
+    // "@next/next/no-img-element": "warn", // Ya está en next/core-web-vitals, pero puedes hacerlo más estricto si quieres "error"
+
+    // JSX-A11y (ejemplos)
+    // "jsx-a11y/anchor-is-valid": ["warn", { "components": ["Link"], "specialLink": ["hrefLeft", "hrefRight"], "aspects": ["invalidHref", "preferButton"] }],
+
+    // Generales
+    "no-console": ["warn", { "allow": ["warn", "error", "info"] }], // Advierte sobre console.log, permite warn, error, info
+    "eqeqeq": ["error", "always"], // Requiere === y !==
+    "no-implicit-coercion": "warn" // Evita coerciones de tipo implícitas
+  },
+  "overrides": [
+    {
+      // Para archivos de configuración (si los tienes en JS)
+      "files": ["*.js", "*.cjs", "*.mjs"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off" // Permite require en archivos JS
+      }
+    }
+  ]
+}

@@ -579,7 +579,7 @@ export default function EdadBiofisicaForm({ patientData, onSave, onBack }: EdadB
               </h3>
             </div>
             <p className="text-gray-500 dark:text-gray-400 text-center max-w-md">
-              Complete los datos en el panel izquierdo y haga clic en "Calcular" para ver los resultados
+              Complete los datos en el panel izquierdo y haga clic en Calcular para ver los resultados
               de la edad biofísica.
             </p>
           </div>

@@ -1,118 +1,64 @@
-// src/app/api/patients/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { query } from '@/lib/db'; // Suponiendo que existe una configuración de conexión a BD
+// CÓDIGO CORRECTO Y DEFINITIVO para src/app/api/patients/route.ts
 
-export async function GET(request: NextRequest) {
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+// GET /api/patients - Obtener lista de pacientes
+export async function GET(request: Request) {
   try {
-    // Parámetros de búsqueda y paginación
-    const searchParams = request.nextUrl.searchParams;
-    const search = searchParams.get('search') || '';
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const offset = (page - 1) * limit;
-    
-    // Consulta SQL para obtener pacientes
-    const patientsQuery = `
-      SELECT 
-        p.id, p.names, p.surnames, p.identification, p.birthday, 
-        p.gender, p.age, p.phone, p.email, p.created_at
-      FROM persons p
-      WHERE (p.names LIKE ? OR p.surnames LIKE ? OR p.identification LIKE ?)
-      ORDER BY p.created_at DESC
-      LIMIT ? OFFSET ?
-    `;
-    
-    // Consulta para contar total de registros (para paginación)
-    const countQuery = `
-      SELECT COUNT(*) as total
-      FROM persons p
-      WHERE (p.names LIKE ? OR p.surnames LIKE ? OR p.identification LIKE ?)
-    `;
-    
-    // Parámetros para búsqueda
-    const searchParam = `%${search}%`;
-    
-    // Ejecutar consultas
-    const patients = await query(patientsQuery, [searchParam, searchParam, searchParam, limit, offset]);
-    const [{ total }] = await query(countQuery, [searchParam, searchParam, searchParam]);
-    
-    // Preparar respuesta con metadatos de paginación
-    return NextResponse.json({
-      data: patients,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit)
-      }
+    const patients = await prisma.patient.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
+    return NextResponse.json(patients);
   } catch (error) {
-    console.error('Error en GET /api/patients:', error);
-    return NextResponse.json(
-      { error: 'Error al obtener pacientes' },
-      { status: 500 }
-    );
+    console.error("Error fetching patients:", error);
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }
 
-export async function POST(request: NextRequest) {
+// POST /api/patients - Crear nueva historia/paciente
+export async function POST(request: Request) {
   try {
-    const patientData = await request.json();
-    
-    // Validación básica
-    if (!patientData.names || !patientData.surnames || !patientData.identification) {
-      return NextResponse.json(
-        { error: 'Faltan campos obligatorios' },
-        { status: 400 }
-      );
+    const data = await request.json();
+
+    if (!data.surnames || !data.names || !data.identification_number || !data.birth_date) {
+        return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
-    
-    // Insertar en la base de datos
-    const insertQuery = `
-      INSERT INTO persons (
-        names, surnames, identification, birthday, gender, 
-        age, phone, email, address, country, city, 
-        birthplace, blood_type, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
-    `;
-    
-    const result = await query(insertQuery, [
-      patientData.names,
-      patientData.surnames,
-      patientData.identification,
-      patientData.birthday || null,
-      patientData.gender || null,
-      patientData.age || null,
-      patientData.phone || null,
-      patientData.email || null,
-      patientData.address || null,
-      patientData.country || null,
-      patientData.city || null,
-      patientData.birthplace || null,
-      patientData.blood_type || null
-    ]);
-    
-    // Obtener el nuevo paciente insertado
-    const newPatient = await query(
-      'SELECT * FROM persons WHERE id = ?',
-      [result.insertId]
-    );
-    
-    return NextResponse.json(newPatient[0], { status: 201 });
+
+    const birthDate = new Date(data.birth_date);
+    const ageDifMs = Date.now() - birthDate.getTime();
+    const ageDate = new Date(ageDifMs);
+    const chronological_age = Math.abs(ageDate.getUTCFullYear() - 1970);
+
+    const newPatient = await prisma.patient.create({
+      data: {
+        surnames: data.surnames,
+        names: data.names,
+        identification_number: data.identification_number,
+        nationality: data.nationality,
+        birth_date: birthDate,
+        chronological_age: chronological_age,
+        gender: data.gender,
+        marital_status: data.marital_status,
+        occupation: data.occupation,
+        address: data.address,
+        country: data.country,
+        state_province: data.state_province,
+        city: data.city,
+        phone_number: data.phone_number,
+        email: data.email,
+        photo_url: data.photo_url,
+        blood_type: data.blood_type,
+        general_observations: data.general_observations,
+      },
+    });
+    return NextResponse.json(newPatient, { status: 201 });
   } catch (error) {
-    console.error('Error en POST /api/patients:', error);
-    
-    // Si es un error de duplicado (violación de clave única)
-    if (error.code === 'ER_DUP_ENTRY') {
-      return NextResponse.json(
-        { error: 'Ya existe un paciente con esta identificación' },
-        { status: 409 }
-      );
-    }
-    
-    return NextResponse.json(
-      { error: 'Error al crear paciente' },
-      { status: 500 }
-    );
+    console.error("Error creating patient:", error);
+    return NextResponse.json({ message: 'Error creating patient' }, { status: 500 });
   }
 }

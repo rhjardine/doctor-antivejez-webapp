@@ -270,7 +270,7 @@ export const uploadPhoto = async (file: File): Promise<string> => {
 // Función para verificar la conexión con el backend
 export const testConnection = async (): Promise<boolean> => {
   try {
-    const response = await apiClient.get('/health-check');
+    const response = await fetch('/api/patients', { ... });
     return response.status === 200;
   } catch (error) {
     console.error('Error de conexión con el backend:', error);

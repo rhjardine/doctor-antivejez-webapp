@@ -1,5 +1,5 @@
 // src/app/historias/HistoryTabs.tsx
-/*'use client';
+'use client';
 
 import { useState } from 'react';
 import { HistoriaClinicaData } from '@/types/historia';

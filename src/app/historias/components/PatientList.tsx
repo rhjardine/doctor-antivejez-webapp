@@ -1,203 +1,133 @@
 // src/app/historias/components/PatientList.tsx
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faSearch, faEdit, faTrash, faUserPlus, 
-  faChevronLeft, faChevronRight, faSpinner,
-  faInfoCircle, faExclamationTriangle
-} from '@fortawesome/free-solid-svg-icons';
-import { usePatient } from '@/contexts/PatientProvider';
+import { faUserPlus, faPenToSquare, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { format } from 'date-fns';
+
+// Definimos el tipo para los datos de un paciente, debe coincidir con el de la API
+interface Patient {
+  id: string;
+  names: string;
+  surnames: string;
+  identification_number: string;
+  birth_date: string; // La API lo enviará como string ISO
+  chronological_age: number;
+  gender: string;
+  phone_number: string | null;
+}
 
 interface PatientListProps {
   onSelectPatient: (patientId: string) => void;
   onCreateNewPatient: () => void;
 }
 
-export default function PatientList({ onSelectPatient, onCreateNewPatient }: PatientListProps) {
-  // Estados
-  const [patients, setPatients] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+// Aseguramos que el componente se exporta como una constante nombrada
+export const PatientList: React.FC<PatientListProps> = ({ onSelectPatient, onCreateNewPatient }) => {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState<string>('');
-  const [page, setPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
-  
-  // Contexto del paciente
-  const { deletePatient } = usePatient();
-  
-  // Cargar pacientes al montar el componente y cuando cambie la búsqueda o página
+  const [searchTerm, setSearchTerm] = useState('');
+
   useEffect(() => {
-    fetchPatients();
-  }, [search, page]);
-  
-  // Función para cargar pacientes
-  const fetchPatients = async () => {
-    try {
+    const fetchPatients = async () => {
       setLoading(true);
       setError(null);
-      
-      const response = await fetch(`/api/patients?search=${encodeURIComponent(search)}&page=${page}`);
-      
-      if (!response.ok) {
-        throw new Error(`Error al cargar pacientes: ${response.statusText}`);
+      try {
+        const response = await fetch(`/api/patients?search=${searchTerm}`);
+        if (!response.ok) {
+          throw new Error('Error al cargar la lista de pacientes');
+        }
+        const data: Patient[] = await response.json();
+        setPatients(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Un error desconocido ocurrió');
+        setPatients([]); // Importante: en caso de error, inicializar como array vacío
+      } finally {
+        setLoading(false);
       }
-      
-      const data = await response.json();
-      
-      setPatients(data.data);
-      setTotalPages(data.pagination.totalPages);
-    } catch (error) {
-      console.error('Error fetching patients:', error);
-      setError(error instanceof Error ? error.message : 'Error desconocido');
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  // Manejar cambio en búsqueda
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    setPage(1); // Resetear página al cambiar búsqueda
-  };
-  
-  // Manejar cambio de página
-  const handlePageChange = (newPage: number) => {
-    if (newPage > 0 && newPage <= totalPages) {
-      setPage(newPage);
-    }
-  };
-  
-  // Confirmar eliminación
-  const confirmDelete = async (id: string) => {
-    try {
-      await deletePatient(id);
-      setShowDeleteConfirm(null);
-      fetchPatients(); // Recargar lista
-    } catch (error) {
-      console.error('Error deleting patient:', error);
-      setError('Error al eliminar el paciente');
-    }
-  };
-  
-  // Formatear fecha
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(date);
-  };
-  
+    };
+
+    const debounceTimeout = setTimeout(() => {
+        fetchPatients();
+    }, 500);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [searchTerm]);
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full">
-      {/* Cabecera */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-        <h2 className="text-xl font-bold text-[#293B64] dark:text-[#23BCEF] flex items-center gap-2">
-          <FontAwesomeIcon icon={faSearch} className="text-[#23BCEF]" />
+    <div className="w-full max-w-full p-4 md:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <h2 className="text-xl font-bold text-[#293B64] dark:text-white">
           Buscar Pacientes
         </h2>
-        
-        <div className="flex items-center gap-3">
-          <div className="relative flex-grow">
-            <input
-              type="text"
-              placeholder="Buscar por nombre o ID..."
-              value={search}
-              onChange={handleSearchChange}
-              className="w-full p-3 pr-10 border-2 border-[#23BCEF]/30 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:ring-2 focus:ring-[#23BCEF]/50 focus:border-[#23BCEF] outline-none"
-            />
-            <FontAwesomeIcon 
-              icon={faSearch} 
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" 
-            />
-          </div>
-          
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <input
+            type="text"
+            placeholder="Buscar por nombre, apellido o ID..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg px-4 py-2 w-full md:w-64 focus:outline-none focus:border-[#23BCEF] transition-colors"
+          />
           <button
             onClick={onCreateNewPatient}
-            className="px-4 py-3 rounded-lg bg-gradient-to-r from-[#23BCEF] to-[#293B64] text-white font-semibold hover:opacity-90 transition-opacity shadow-md flex items-center gap-2 whitespace-nowrap"
+            className="bg-[#23BCEF] text-white font-bold py-2 px-4 rounded-lg hover:bg-[#1faade] transition-colors flex items-center gap-2 whitespace-nowrap"
           >
             <FontAwesomeIcon icon={faUserPlus} />
-            <span className="hidden md:inline">Nuevo Paciente</span>
+            <span>Nuevo Paciente</span>
           </button>
         </div>
       </div>
-      
-      {/* Mensaje de error */}
+
       {error && (
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
-          <div className="flex items-center">
-            <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />
-            <p>{error}</p>
-          </div>
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg" role="alert">
+          <p className="font-bold">Error</p>
+          <p>{error}</p>
         </div>
       )}
-      
-      {/* Tabla de pacientes */}
+
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gradient-to-r from-[#23BCEF]/10 to-[#293B64]/10 text-left">
-              <th className="px-4 py-3 text-[#293B64] dark:text-[#23BCEF] font-semibold">ID</th>
-              <th className="px-4 py-3 text-[#293B64] dark:text-[#23BCEF] font-semibold">Nombre Completo</th>
-              <th className="px-4 py-3 text-[#293B64] dark:text-[#23BCEF] font-semibold">Identificación</th>
-              <th className="px-4 py-3 text-[#293B64] dark:text-[#23BCEF] font-semibold">Fecha Nac.</th>
-              <th className="px-4 py-3 text-[#293B64] dark:text-[#23BCEF] font-semibold">Edad</th>
-              <th className="px-4 py-3 text-[#293B64] dark:text-[#23BCEF] font-semibold">Género</th>
-              <th className="px-4 py-3 text-[#293B64] dark:text-[#23BCEF] font-semibold">Teléfono</th>
-              <th className="px-4 py-3 text-[#293B64] dark:text-[#23BCEF] font-semibold text-center">Acciones</th>
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              {['ID', 'Nombre Completo', 'Identificación', 'Fecha Nac.', 'Edad', 'Género', 'Teléfono', 'Acciones'].map((header) => (
+                <th key={header} scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  {header}
+                </th>
+              ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {loading ? (
               <tr>
-                <td colSpan={8} className="text-center py-6">
-                  <FontAwesomeIcon icon={faSpinner} className="animate-spin text-[#23BCEF] text-2xl" />
-                  <p className="mt-2 text-gray-600 dark:text-gray-400">Cargando pacientes...</p>
+                <td colSpan={8} className="text-center py-10">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#23BCEF] mx-auto"></div>
+                  <p className="mt-2 text-gray-500">Cargando...</p>
                 </td>
               </tr>
-            ) : patients.length === 0 ? (
+            ) : !patients || patients.length === 0 ? (
               <tr>
-                <td colSpan={8} className="text-center py-6">
-                  <FontAwesomeIcon icon={faInfoCircle} className="text-[#293B64] dark:text-[#23BCEF] text-2xl mb-2" />
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {search ? 'No se encontraron pacientes con esa búsqueda' : 'No hay pacientes registrados'}
-                  </p>
+                <td colSpan={8} className="text-center py-10">
+                  <FontAwesomeIcon icon={faInfoCircle} className="text-[#293B64] dark:text-[#23BCEF] text-3xl mb-2" />
+                  <p className="text-gray-500 dark:text-gray-400">No hay pacientes registrados</p>
                 </td>
               </tr>
             ) : (
               patients.map((patient) => (
-                <tr 
-                  key={patient.id} 
-                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/30"
-                >
-                  <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{patient.id}</td>
-                  <td className="px-4 py-3 text-gray-700 dark:text-gray-300 font-medium">
-                    {`${patient.surnames || ''} ${patient.names || ''}`}
-                  </td>
-                  <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{patient.identification || '-'}</td>
-                  <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{formatDate(patient.birthday)}</td>
-                  <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{patient.age || '-'}</td>
-                  <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{patient.gender || '-'}</td>
-                  <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{patient.phone || '-'}</td>
-                  <td className="px-4 py-3 flex justify-center gap-2">
-                    <button
-                      onClick={() => onSelectPatient(patient.id)}
-                      className="p-2 text-[#23BCEF] hover:text-[#293B64] dark:hover:text-white bg-[#23BCEF]/10 hover:bg-[#23BCEF]/20 rounded-md transition-colors"
-                      title="Editar paciente"
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      onClick={() => setShowDeleteConfirm(patient.id)}
-                      className="p-2 text-red-500 hover:text-red-600 dark:hover:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-md transition-colors"
-                      title="Eliminar paciente"
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
+                <tr key={patient.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{patient.id.substring(0, 8)}...</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{`${patient.names} ${patient.surnames}`}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{patient.identification_number}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{format(new Date(patient.birth_date), 'dd/MM/yyyy')}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{patient.chronological_age}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{patient.gender}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{patient.phone_number || 'N/A'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button onClick={() => onSelectPatient(patient.id)} className="text-[#23BCEF] hover:text-[#1faade] flex items-center gap-1">
+                      <FontAwesomeIcon icon={faPenToSquare} />
+                      <span>Ver</span>
                     </button>
                   </td>
                 </tr>
@@ -206,59 +136,6 @@ export default function PatientList({ onSelectPatient, onCreateNewPatient }: Pat
           </tbody>
         </table>
       </div>
-      
-      {/* Paginación */}
-      {totalPages > 1 && (
-        <div className="flex justify-between items-center mt-6">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            Página {page} de {totalPages}
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => handlePageChange(page - 1)}
-              disabled={page === 1}
-              className="p-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <FontAwesomeIcon icon={faChevronLeft} />
-            </button>
-            <button
-              onClick={() => handlePageChange(page + 1)}
-              disabled={page === totalPages}
-              className="p-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <FontAwesomeIcon icon={faChevronRight} />
-            </button>
-          </div>
-        </div>
-      )}
-      
-      {/* Modal de confirmación de eliminación */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-bold text-[#293B64] dark:text-[#23BCEF] mb-4">
-              Confirmar eliminación
-            </h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-6">
-              ¿Está seguro que desea eliminar este paciente? Esta acción no se puede deshacer.
-            </p>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setShowDeleteConfirm(null)}
-                className="px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => confirmDelete(showDeleteConfirm)}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-              >
-                Eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
-}
+};
