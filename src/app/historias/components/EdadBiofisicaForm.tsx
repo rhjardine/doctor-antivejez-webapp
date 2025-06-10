@@ -17,8 +17,8 @@ import {
   getDimensionsResult,
   buildSavePayload
 } from '@/utils/biofisicaBoardCalculations';
-import BiofisicaCharts from './BiofisicaCharts';
-import BiofisicaResult from './BiofisicaResult';
+import BiofisicaCharts from './EdadBiofisica/BiofisicaCharts';
+import BiofisicaResult from './EdadBiofisica/BiofisicaResult';
 
 interface EdadBiofisicaFormProps {
   patientData: PatientBiofisicaData;

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import EdadBiofisicaForm from './BiofisicaForm';
+import EdadBiofisicaForm from './EdadBiofisicaForm';
 import { BiofisicaFormData } from '@/app/historias/types/biofisica';
 import { transformBiofisicaFormToPayload } from '@/utils/transformBiofisicaData';
 import { showToast } from '@/utils/toast';

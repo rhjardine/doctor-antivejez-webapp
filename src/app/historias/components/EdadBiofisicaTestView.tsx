@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import EdadBiofisicaForm from '@/app/historias/components/EdadBiofisica/EdadBiofisicaForm';
+import EdadBiofisicaForm from '@/app/historias/components/EdadBiofisicaForm';
 import { PatientBiofisicaData, BiofisicaFormData } from '@/app/historias/types/biofisica';
 
 interface EdadBiofisicaTestViewProps {
