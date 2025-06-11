@@ -5,24 +5,33 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faCalendarAlt, faVenusMars } from '@fortawesome/free-solid-svg-icons';
 
+// --- INICIO DE LA CORRECCIÓN ---
+// Importamos el tipo 'Patient' directamente desde Prisma si es posible.
+// Si no, esta interfaz es una buena alternativa.
+import type { Patient } from '@prisma/client';
+
+// Hacemos que algunas props sean opcionales para mayor flexibilidad
 interface PatientHeaderProps {
-  patient: {
-    id: string;
-    name?: string;
-    names?: string;
-    surnames?: string;
-    age: number;
-    gender: string;
+  patient: Partial<Patient> & { // Usamos Partial<Patient> para que todos los campos de Prisma sean opcionales
+    id: string; // Hacemos el id requerido
     biologicalAge?: number;
-    trend?: number;
-    healthScore?: number;
+    trend?: number;
+    healthScore?: number;
   };
 }
+// --- FIN DE LA CORRECCIÓN ---
+
 
 export default function PatientHeader({ patient }: PatientHeaderProps) {
   // Obtener nombre completo (compatibilidad con ambos formatos)
-  const fullName = patient.name || `${patient.surnames || ''} ${patient.names || ''}`;
+  const fullName = `${patient.names || ''} ${patient.surnames || ''}`;
   
+  // --- INICIO DE LA CORRECCIÓN ---
+  // 1. Usamos `chronological_age` que es el campo correcto de la base de datos.
+  // 2. Añadimos `?? 'N/A'` para mostrar 'N/A' si por alguna razón la edad no está disponible.
+  const displayAge = patient.chronological_age ?? 'N/A';
+  // --- FIN DE LA CORRECCIÓN ---
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 mb-6">
       <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
@@ -40,7 +49,9 @@ export default function PatientHeader({ patient }: PatientHeaderProps) {
           <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-2">
             <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
               <FontAwesomeIcon icon={faCalendarAlt} className="text-[#23BCEF]" />
-              <span>Edad: {patient.age} años</span>
+              {/* --- INICIO DE LA CORRECCIÓN --- */}
+              <span>Edad: {displayAge} años</span>
+              {/* --- FIN DE LA CORRECCIÓN --- */}
             </div>
             
             <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">

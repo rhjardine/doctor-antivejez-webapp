@@ -1,140 +1,98 @@
+// src/app/api/patients/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-// Función para calcular edad cronológica
-function calculateChronologicalAge(birthDate: string): number {
+// Función para calcular la edad (reutilizada para mantener consistencia)
+function calculateChronologicalAge(birthDate: Date): number {
   const today = new Date();
-  const birth = new Date(birthDate);
-  let age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
     age--;
   }
-  
   return age;
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+/**
+ * GET: Obtener un paciente específico por su ID.
+ * Es usado por el PatientProvider para cargar los datos del paciente seleccionado.
+ */
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { id } = params;
-    console.log('GET /api/patients/[id] - id:', id);
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'ID del paciente es requerido' },
-        { status: 400 }
-      );
-    }
-
     const patient = await prisma.patient.findUnique({
       where: { id },
+      include: {
+        biophysics_tests: { // Opcional: Incluir el historial de tests
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
     });
 
     if (!patient) {
-      console.log('Patient not found:', id);
-      return NextResponse.json(
-        { error: `Paciente con ID ${id} no encontrado` },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: 'Paciente no encontrado' }, { status: 404 });
     }
-
-    console.log('Patient found:', patient.id);
     return NextResponse.json(patient);
   } catch (error) {
-    console.error('Error in GET /api/patients/[id]:', error);
-    return NextResponse.json(
-      { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    );
+    console.error(`Error en GET /api/patients/[id]:`, error);
+    return NextResponse.json({ message: 'Error interno del servidor' }, { status: 500 });
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+
+/**
+ * PUT: Actualizar un paciente existente.
+ * Esta es la nueva lógica para el modo de edición del formulario.
+ */
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { id } = params;
     const body = await request.json();
-    console.log('PUT /api/patients/[id] - id:', id, 'body:', body);
 
-    if (!id) {
-      return NextResponse.json(
-        { error: 'ID del paciente es requerido' },
-        { status: 400 }
-      );
+    // Validar que el paciente exista antes de intentar actualizar
+    const existingPatient = await prisma.patient.findUnique({ where: { id } });
+    if (!existingPatient) {
+      return NextResponse.json({ message: 'Paciente no encontrado para actualizar' }, { status: 404 });
     }
+    
+    // --- MANEJO DE FECHA Y EDAD ---
+    let birthDateObj: Date | undefined = undefined;
+    let chronological_age: number | undefined = undefined;
 
-    // Calcular edad cronológica si se proporciona fecha de nacimiento
-    let updateData = { ...body };
-    if (body.birth_date && !body.chronological_age) {
-      updateData.chronological_age = calculateChronologicalAge(body.birth_date);
+    if (body.birth_date && typeof body.birth_date === 'string') {
+      birthDateObj = new Date(body.birth_date);
+      if (isNaN(birthDateObj.getTime())) {
+          return NextResponse.json({ message: 'Formato de fecha de nacimiento inválido' }, { status: 400 });
+      }
+      chronological_age = calculateChronologicalAge(birthDateObj);
     }
-
-    // Remover campos que no existen en el esquema
-    delete updateData.birthday;
-    delete updateData.age;
-
-    updateData.updatedAt = new Date();
+    
+    // --- PREPARAR DATOS PARA PRISMA ---
+    const patientDataToUpdate = {
+      ...body, // Pasamos todos los campos del formulario
+      birth_date: birthDateObj, // Sobrescribimos con el objeto Date
+      chronological_age: chronological_age, // Sobrescribimos con la edad calculada
+    };
 
     const updatedPatient = await prisma.patient.update({
       where: { id },
-      data: updateData,
+      data: patientDataToUpdate,
     });
 
-    console.log('Patient updated:', updatedPatient.id);
-    return NextResponse.json(updatedPatient);
-  } catch (error) {
-    console.error('Error in PUT /api/patients/[id]:', error);
-    if (error instanceof Error && error.message.includes('Record to update not found')) {
+    return NextResponse.json(updatedPatient, { status: 200 });
+
+  } catch (error: any) {
+    console.error(`Error en PUT /api/patients/[id]:`, error);
+    // Manejar el caso donde se intenta cambiar la cédula a una que ya existe
+    if (error.code === 'P2002') {
       return NextResponse.json(
-        { error: 'Paciente no encontrado' },
-        { status: 404 }
+        { message: `Conflicto: Los datos únicos (ej. Cédula o Email) ya pertenecen a otro paciente.` },
+        { status: 409 }
       );
     }
-    return NextResponse.json(
-      { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const { id } = params;
-    console.log('DELETE /api/patients/[id] - id:', id);
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'ID del paciente es requerido' },
-        { status: 400 }
-      );
-    }
-
-    await prisma.patient.delete({
-      where: { id },
-    });
-
-    console.log('Patient deleted:', id);
-    return NextResponse.json({ message: 'Paciente eliminado exitosamente' });
-  } catch (error) {
-    console.error('Error in DELETE /api/patients/[id]:', error);
-    if (error instanceof Error && error.message.includes('Record to delete does not exist')) {
-      return NextResponse.json(
-        { error: 'Paciente no encontrado' },
-        { status: 404 }
-      );
-    }
-    return NextResponse.json(
-      { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    );
+    
+    return NextResponse.json({ message: 'Error del servidor al actualizar el paciente.', details: error.message }, { status: 500 });
   }
 }

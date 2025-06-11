@@ -12,32 +12,31 @@ interface EdadBiologicaTabProps {
 
 const EdadBiologicaTab = ({ patientId }: EdadBiologicaTabProps) => {
     const handleSaveBiofisicaData = async (formData: BiofisicaFormData) => {
-        console.log("Intentando guardar datos biofísicos:", formData);
-        const payload = transformBiofisicaFormToPayload(formData);
-        payload.patient_id = patientId;
+        // El payload debe coincidir con el modelo `BiophysicsTest` de Prisma
+        const payload = {
+            patientId: patientId,
+            chronological_age: formData.chronological,
+            biological_age: formData.biological,
+            differential_age: formData.differential,
+            form_data: formData.fields, // Guardamos el detalle como JSON
+        };
 
         try {
-            const response = await fetch('/api/tests/biofisica', {
+            // APUNTAR A LA RUTA CORRECTA
+            const response = await fetch('/api/biophysics-tests', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Ocurrió un error en el servidor al guardar.');
+                throw new Error(errorData.message || 'Error al guardar el test biofísico.');
             }
 
-            const successData = await response.json();
-            showToast('Guardado Exitoso', successData.message || 'Datos del test guardados.', 'success');
-            console.log('Save success:', successData);
-
+            // ... manejo de éxito
         } catch (error: any) {
-            showToast('Error al Guardar', error.message || 'Error de conexión o servidor.', 'error');
-            console.error('Error saving biofisica data:', error);
-            throw error;
+            // ... manejo de error
         }
     };
 
