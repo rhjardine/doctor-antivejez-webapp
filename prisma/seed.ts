@@ -1,179 +1,302 @@
 // prisma/seed.ts
-import
-{ PrismaClient } from '@prisma/
-const
-prisma = new PrismaClient
-// Mapeo de los rangos de edad del sistema antiguo (1
-14)
-const
-ageRangeMap =
-1 { min_age: 21 , max_age: 28 }, 2 { min_age: 28 , max_age: 35 }, 3 { min_age: 35 , max_age: 42
-4 { min_age: 42 , max_age: 49 }, 5 { min_age: 49 , max_age: 56 }, 6 { min_age: 56 , max_age: 63
-7 { min_age: 63 , max_age: 70 }, 8 { min_age: 70 , max_age: 77 }, 9 { min_age: 77 , max_age: 84
-10 { min_age: 84 , max_age: 91 }, 11 { min_age: 91 , max_age: 98 }, 12 { min_age: 98 , max_age:
-105
-13 { min_age: 105 , max_age: 112 }, 14 { min_age: 112 , max_age: 120
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+// Mapeo de los rangos de edad del sistema antiguo (1-14)
+const ageRangeMap = {
+  1: { min_age: 21, max_age: 28 },
+  2: { min_age: 28, max_age: 35 },
+  3: { min_age: 35, max_age: 42 },
+  4: { min_age: 42, max_age: 49 },
+  5: { min_age: 49, max_age: 56 },
+  6: { min_age: 56, max_age: 63 },
+  7: { min_age: 63, max_age: 70 },
+  8: { min_age: 70, max_age: 77 },
+  9: { min_age: 77, max_age: 84 },
+  10: { min_age: 84, max_age: 91 },
+  11: { min_age: 91, max_age: 98 },
+  12: { min_age: 98, max_age: 105 },
+  13: { min_age: 105, max_age: 112 },
+  14: { min_age: 112, max_age: 120 }
 };
+
 // **TODOS los datos del seeder PHP, transcritos y consolidados en un solo array**
-const
-oldBaremData =
-// Grasa Masculina
-{ r: 1 , n: 'male_ fat', min: 10 , max: 14 }, { r: 2 , n: 'male_ fat', min: 14 , max: 18 }, { r: 3 , n: 'male_ fat',
-min: 18 , max: 21
-{ r: 4 , n: 'male_ fat', min: 21 , max: 24 }, { r: 5 , n: 'male_ fat', min: 24 , max: 27 }, { r: 6 , n: 'male_ fat',
-min: 27 , max: 30
-{ r: 7 , n: 'male_ fat', min: 30 , max: 33 }, { r: 7 , n: 'male_ fat', min: 7 , max: 9.99 , inv: true }, { r: 8 , n:
-'male_ fat', min: 33 , max: 36
-{ r: 8 , n: 'male_ fat', min: 6 , max: 7 , inv: true }, { r: 9 , n: 'male_ fat', min: 36 , max: 39 }, { r: 9 , n:
-'male_ fat', min: 5 , max: 6 , inv: true
-{ r: 10 , n: 'male_ fat', min: 39 , max: 42 }, { r: 10 , n: 'male_ fat', min: 4 , max: 5 , inv: true }, { r: 11 , n:
-'male_ fat', min: 42 , max: 45
-{ r: 11 , n: 'male_ fat', min: 3 , max: 4 , inv: true }, { r: 12 , n: 'male_ fat', min: 45 , max: 48 }, { r: 12 , n:
-'male_ fat', min: 2 , max: 3 , inv: true
-{ { r:r: 1313, , n:n: 'male_fat''male_fat', , min:min: 4848, , max:max: 5151 }, { }, { r:r: 1313, , n:n: 'male_fat''male_fat', , min:min: 11, , max:max: 22, , inv:inv: truetrue }, { }, { r:r: 1414, , n:n: 'male_fat''male_fat', , min:min: 5151, , max:max: 5454 },},
-{ { r:r: 1414, , n:n: 'male_fat''male_fat', , min:min: 00, , max:max: 11, , inv:inv: truetrue },},
-// Grasa Masculina Deportiva// Grasa Masculina Deportiva
-{ { r:r: 11, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 11, , max:max: 77 }, { }, { r:r: 22, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 77, , max:max: 1414 }, { }, { r:r: 33, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 1414, , max:max: 1717 },},
-{ { r:r: 44, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 1717, , max:max: 2121 }, { }, { r:r: 55, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 2121, , max:max: 2525 }, { }, { r:r: 66, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 2525, , max:max: 2828 },},
-{ { r:r: 77, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 2828, , max:max: 3131 }, { }, { r:r: 88, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 3131, , max:max: 3434 }, { }, { r:r: 99, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 3434, , max:max: 3737 },},
-{ { r:r: 1010, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 3737, , max:max: 4040 }, { }, { r:r: 1111, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 4040, , max:max: 4343 }, { }, { r:r: 1212, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 4343, , max:max: 4646 },},
-{ { r:r: 1313, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 4646, , max:max: 4949 }, { }, { r:r: 1414, , n:n: 'sporty_male_fat''sporty_male_fat', , min:min: 4848, , max:max: 5252 },},
-// Grasa Femenina// Grasa Femenina
-{ { r:r: 11, , n:n: 'female_fat''female_fat', , min:min: 1818, , max:max: 2222 }, { }, { r:r: 22, , n:n: 'female_fat''female_fat', , min:min: 2222, , max:max: 2626 }, { }, { r:r: 33, , n:n: 'female_fat''female_fat', , min:min: 2626, , max:max: 2929 },},
-{ { r:r: 44, , n:n: 'female_fat''female_fat', , min:min: 2929, , max:max: 3232 }, { }, { r:r: 55, , n:n: 'female_fat''female_fat', , min:min: 3232, , max:max: 3535 }, { }, { r:r: 66, , n:n: 'female_fat''female_fat', , min:min: 3535, , max:max: 3838 },},
-{ { r:r: 77, , n:n: 'female_fat''female_fat', , min:min: 3838, , max:max: 4141 }, { }, { r:r: 77, , n:n: 'female_fat''female_fat', , min:min: 1515, , max:max: 17.9917.99, , inv:inv: truetrue }, { }, { r:r: 88, , n:n: 'female_fat''female_fat', , min:min: 4141, , max:max: 4444 },},
-{ { r:r: 88, , n:n: 'female_fat''female_fat', , min:min: 1414, , max:max: 1515, , inv:inv: truetrue }, { }, { r:r: 99, , n:n: 'female_fat''female_fat', , min:min: 4444, , max:max: 4747 }, { }, { r:r: 99, , n:n: 'female_fat''female_fat', , min:min: 1313, , max:max: 1414, , inv:inv: truetrue },},
-{ { r:r: 1010, , n:n: 'female_fat''female_fat', , min:min: 4747, , max:max: 5050 }, { }, { r:r: 1010, , n:n: 'female_fat''female_fat', , min:min: 1212, , max:max: 1313, , inv:inv: truetrue }, { }, { r:r: 1111, , n:n: 'female_fat''female_fat', , min:min: 5050, , max:max: 5353 },},
-{ { r:r: 1111, , n:n: 'female_fat''female_fat', , min:min: 1111, , max:max: 1212, , inv:inv: truetrue }, { }, { r:r: 1212, , n:n: 'female_fat''female_fat', , min:min: 5353, , max:max: 5656 }, { }, { r:r: 1212, , n:n: 'female_fat''female_fat', , min:min: 1010, , max:max: 1111, , inv:inv: truetrue },},
-{ { r:r: 1313, , n:n: 'female_fat''female_fat', , min:min: 5656, , max:max: 5959 }, { }, { r:r: 1313, , n:n: 'female_fat''female_fat', , min:min: 99, , max:max: 1010, , inv:inv: truetrue }, { }, { r:r: 1414, , n:n: 'female_fat''female_fat', , min:min: 5959, , max:max: 6262 },},
-{ { r:r: 1414, , n:n: 'female_fat''female_fat', , min:min: 88, , max:max: 99, , inv:inv: truetrue },},
-// Grasa Femenina Deportiva// Grasa Femenina Deportiva
-{ { r:r: 11, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 11, , max:max: 99 }, { }, { r:r: 22, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 99, , max:max: 1818 }, { }, { r:r: 33, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 1818, , max:max: 2222 },},
-{ { r:r: 44, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 2222, , max:max: 2525 }, { }, { r:r: 55, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 2525, , max:max: 2727 }, { }, { r:r: 66, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 2727, , max:max: 3030 },},
-{ { r:r: 77, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 3030, , max:max: 3333 }, { }, { r:r: 88, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 3333, , max:max: 3636 }, { }, { r:r: 99, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 3636, , max:max: 3939 },},
-{ { r:r: 1010, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 3939, , max:max: 4242 }, { }, { r:r: 1111, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 4242, , max:max: 4545 }, { }, { r:r: 1212, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 4545, , max:max: 4848 },},
-{ { r:r: 1313, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 4848, , max:max: 5151 }, { }, { r:r: 1414, , n:n: 'sporty_female_fat''sporty_female_fat', , min:min: 5151, , max:max: 5454 },},
-// Masa Corporal (IMC)// Masa Corporal (IMC)
-{ { r:r: 11, , n:n: 'body_mass''body_mass', , min:min: 1818, , max:max: 2222 }, { }, { r:r: 22, , n:n: 'body_mass''body_mass', , min:min: 2222, , max:max: 2525 }, { }, { r:r: 33, , n:n: 'body_mass''body_mass', , min:min: 2525, , max:max: 2727 },},
-{ { r:r: 44, , n:n: 'body_mass''body_mass', , min:min: 2727, , max:max: 3030 }, { }, { r:r: 55, , n:n: 'body_mass''body_mass', , min:min: 3030, , max:max: 3333 }, { }, { r:r: 66, , n:n: 'body_mass''body_mass', , min:min: 3333, , max:max: 3636 },},
-{ { r:r: 77, , n:n: 'body_mass''body_mass', , min:min: 3636, , max:max: 3939 }, { }, { r:r: 88, , n:n: 'body_mass''body_mass', , min:min: 3939, , max:max: 4242 }, { }, { r:r: 88, , n:n: 'body_mass''body_mass', , min:min: 1616, , max:max: 17.9917.99, , inv:inv: truetrue },},
-{ { r:r: 99, , n:n: 'body_mass''body_mass', , min:min: 4242, , max:max: 4545 }, { }, { r:r: 99, , n:n: 'body_mass''body_mass', , min:min: 1515, , max:max: 1616, , inv:inv: truetrue }, { }, { r:r: 1010, , n:n: 'body_mass''body_mass', , min:min: 4545, , max:max: 4848 },},
-{ { r:r: 1010, , n:n: 'body_mass''body_mass', , min:min: 1414, , max:max: 1515, , inv:inv: truetrue }, { }, { r:r: 1111, , n:n: 'body_mass''body_mass', , min:min: 4848, , max:max: 5151 }, { }, { r:r: 1111, , n:n: 'body_mass''body_mass', , min:min: 1212, , max:max: 1313, , inv:inv: truetrue },},
-{ { r:r: 1212, , n:n: 'body_mass''body_mass', , min:min: 5151, , max:max: 5454 }, { }, { r:r: 1212, , n:n: 'body_mass''body_mass', , min:min: 1111, , max:max: 1212, , inv:inv: truetrue }, { }, { r:r: 1313, , n:n: 'body_mass''body_mass', , min:min: 5454, , max:max: 5757 },},
-{ { r:r: 1313, , n:n: 'body_mass''body_mass', , min:min: 1010, , max:max: 1111, , inv:inv: truetrue }, { }, { r:r: 1414, , n:n: 'body_mass''body_mass', , min:min: 5757, , max:max: 6060 }, { }, { r:r: 1414, , n:n: 'body_mass''body_mass', , min:min: 99, , max:max: 1010, , inv:inv: truetrue },},
-// Reflejos digitales// Reflejos digitales
-{ { r:r: 11, , n:n: 'digital_reflections''digital_reflections', , min:min: 5050, , max:max: 4545 }, { }, { r:r: 22, , n:n: 'digital_reflections''digital_reflections', , min:min: 4545, , max:max: 3535 }, { }, { r:r: 33, , n:n: 'digital_reflections''digital_reflections', , min:min: 3535, , max:max: 3030 },},
-{ { r:r: 44, , n:n: 'digital_reflections''digital_reflections', , min:min: 3030, , max:max: 2525 }, { }, { r:r: 55, , n:n: 'digital_reflections''digital_reflections', , min:min: 2525, , max:max: 2020 }, { }, { r:r: 66, , n:n: 'digital_reflections''digital_reflections', , min:min: 2020, , max:max: 1515 },},
-{ { r:r: 77, , n:n: 'digital_reflections''digital_reflections', , min:min: 1515, , max:max: 1010 }, { }, { r:r: 88, , n:n: 'digital_reflections''digital_reflections', , min:min: 1010, , max:max: 88 }, { }, { r:r: 99, , n:n: 'digital_reflections''digital_reflections', , min:min: 88, , max:max: 66 },},
-{ { r:r: 1010, , n:n: 'digital_reflections''digital_reflections', , min:min: 66, , max:max: 44 }, { }, { r:r: 1111, , n:n: 'digital_reflections''digital_reflections', , min:min: 44, , max:max: 33 }, { }, { r:r: 1212, , n:n: 'digital_reflections''digital_reflections', , min:min: 33, , max:max: 22 },},
-{ { r:r: 1313, , n:n: 'digital_reflections''digital_reflections', , min:min: 22, , max:max: 11 }, { }, { r:r: 1414, , n:n: 'digital_reflections''digital_reflections', , min:min: 11, , max:max: 00 },},
-// Acomodación Visual// Acomodación Visual
-{ { r:r: 11, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 00, , max:max: 1010 }, { }, { r:r: 22, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 1010, , max:max: 1515 }, { }, { r:r: 33, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 1515, , max:max: 1818 },},
-{ { r:r: 44, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 1818, , max:max: 2121 }, { }, { r:r: 55, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 2121, , max:max: 2424 }, { }, { r:r: 66, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 2424, , max:max: 2727 },},
-{ { r:r: 77, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 2727, , max:max: 3030 }, { }, { r:r: 88, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 3030, , max:max: 3333 }, { }, { r:r: 99, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 3333, , max:max: 3737 },},
-{ { r:r: 1010, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 3737, , max:max: 4040 }, { }, { r:r: 1111, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 4040, , max:max: 4343 }, { }, { r:r: 1212, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 4343, , max:max: 4747 },},
-{ { r:r: 1313, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 4747, , max:max: 5050 }, { }, { r:r: 1414, , n:n: 'visual_accommodation''visual_accommodation', , min:min: 5050, , max:max: 5353 },},
-// Balance Estatico// Balance Estatico
-{ { r:r: 11, , n:n: 'static_balance''static_balance', , min:min: 120120, , max:max: 3030 }, { }, { r:r: 22, , n:n: 'static_balance''static_balance', , min:min: 3030, , max:max: 2525 }, { }, { r:r: 33, , n:n: 'static_balance''static_balance', , min:min: 2525, , max:max: 2020 },},
-{ { r:r: 44, , n:n: 'static_balance''static_balance', , min:min: 2020, , max:max: 1515 }, { }, { r:r: 55, , n:n: 'static_balance''static_balance', , min:min: 1515, , max:max: 1212 }, { }, { r:r: 66, , n:n: 'static_balance''static_balance', , min:min: 1212, , max:max: 99 },},
-{ { r:r: 77, , n:n: 'static_balance''static_balance', , min:min: 99, , max:max: 77 }, { }, { r:r: 88, , n:n: 'static_balance''static_balance', , min:min: 77, , max:max: 66 }, { }, { r:r: 99, , n:n: 'static_balance''static_balance', , min:min: 66, , max:max: 55 },},
-{ { r:r: 1010, , n:n: 'static_balance''static_balance', , min:min: 55, , max:max: 44 }, { }, { r:r: 1111, , n:n: 'static_balance''static_balance', , min:min: 44, , max:max: 33 }, { }, { r:r: 1212, , n:n: 'static_balance''static_balance', , min:min: 33, , max:max: 22 },},
-{ { r:r: 1313, , n:n: 'static_balance''static_balance', , min:min: 22, , max:max: 11 }, { }, { r:r: 1414, , n:n: 'static_balance''static_balance', , min:min: 11, , max:max: 00 },},
-// Hidratación Cutánea// Hidratación Cutánea
-{ { r:r: 11, , n:n: 'skin_hydration''skin_hydration', , min:min: 00, , max:max: 11 }, { }, { r:r: 22, , n:n: 'skin_hydration''skin_hydration', , min:min: 11, , max:max: 22 }, { }, { r:r: 33, , n:n: 'skin_hydration''skin_hydration', , min:min: 22, , max:max: 44 },},
-{ { r:r: 44, , n:n: 'skin_hydration''skin_hydration', , min:min: 44, , max:max: 88 }, { }, { r:r: 55, , n:n: 'skin_hydration''skin_hydration', , min:min: 88, , max:max: 1616 }, { }, { r:r: 66, , n:n: 'skin_hydration''skin_hydration', , min:min: 1616, , max:max: 3232 },},
-{ { r:r: 77, , n:n: 'skin_hydration''skin_hydration', , min:min: 3232, , max:max: 6464 }, { }, { r:r: 88, , n:n: 'skin_hydration''skin_hydration', , min:min: 6464, , max:max: 7474 }, { }, { r:r: 99, , n:n: 'skin_hydration''skin_hydration', , min:min: 7474, , max:max: 8484 },},
-{ { r:r: 1010, , n:n: 'skin_hydration''skin_hydration', , min:min: 8484, , max:max: 9494 }, { }, { r:r: 1111, , n:n: 'skin_hydration''skin_hydration', , min:min: 9494, , max:max: 104104 }, { }, { r:r: 1212, , n:n: 'skin_hydration''skin_hydration', , min:min: 104104, , max:max: 108108 },},
-{ { r:r: 1313, , n:n: 'skin_hydration''skin_hydration', , min:min: 108108, , max:max: 112112 }, { }, { r:r: 1414, , n:n: 'skin_hydration''skin_hydration', , min:min: 112112, , max:max: 120120 },},
-// Tensión Arterial sistólica// Tensión Arterial sistólica
-{ { r:r: 11, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 100100, , max:max: 110110 }, { }, { r:r: 22, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 110110, , max:max: 120120 }, { }, { r:r: 33, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 120120, , max:max: 130130 },},
-{ { r:r: 33, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 9595, , max:max: 99.9999.99, , inv:inv: truetrue }, { }, { r:r: 44, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 130130, , max:max: 140140 }, { }, { r:r: 44, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 9090, , max:max: 9595, , inv:inv: truetrue },},
-{ { r:r: 55, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 140140, , max:max: 150150 }, { }, { r:r: 55, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 8585, , max:max: 9090, , inv:inv: truetrue }, { }, { r:r: 66, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 150150, , max:max: 160160 },},
-{ { r:r: 66, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 8080, , max:max: 8585, , inv:inv: truetrue }, { }, { r:r: 77, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 160160, , max:max: 170170 }, { }, { r:r: 77, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 7575, , max:max: 8080, , inv:inv: truetrue },},
-{ { r:r: 88, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 170170, , max:max: 180180 }, { }, { r:r: 88, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 7070, , max:max: 7575, , inv:inv: truetrue }, { }, { r:r: 99, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 180180, , max:max: 190190 },},
-{ { r:r: 99, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 6565, , max:max: 7070, , inv:inv: truetrue }, { }, { r:r: 1010, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 190190, , max:max: 200200 }, { }, { r:r: 1010, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 6060, , max:max: 6565, , inv:inv: truetrue },},
-{ { r:r: 1111, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 200200, , max:max: 210210 }, { }, { r:r: 1111, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 5555, , max:max: 6060, , inv:inv: truetrue }, { }, { r:r: 1212, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 210210, , max:max: 220220 },},
-{ { r:r: 1212, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 5050, , max:max: 5555,, inv:inv: truetrue }, { }, { r:r: 1313, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 220220, , max:max: 230230 }, { }, { r:r: 1313, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 4545, , max:max: 5050, , inv:inv: truetrue },},
-{ { r:r: 1414, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 230230, , max:max: 240240 }, { }, { r:r: 1414, , n:n: 'systolic_blood_pressure''systolic_blood_pressure', , min:min: 4040,, max:max: 4545, , inv:inv: truetrue },},
-// Tensión Arterial Diastolica// Tensión Arterial Diastolica
-{ { r:r: 11, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 6060, , max:max: 6565 }, { }, { r:r: 22, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 6565, , max:max: 7070 }, { }, { r:r: 33, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 7070, , max:max: 7575 },},
-{ { r:r: 44, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 7575, , max:max: 8080 }, { }, { r:r: 55, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 8080, , max:max: 8585 }, { }, { r:r: 66, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 8585, , max:max: 9090 },},
-{ { r:r: 77, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 9090, , max:max: 9595 }, { }, { r:r: 77, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 5757, , max:max: 59.9959.99, , inv:inv: truetrue }, { }, { r:r: 88, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 9595, , max:max: 100100 },},
-{ { r:r: 88, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 5353, , max:max: 5757, , inv:inv: truetrue }, { }, { r:r: 99, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 100100, , max:max: 110110 }, { }, { r:r: 99, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 5050, , max:max: 5353, , inv:inv: truetrue },},
-{ { r:r: 1010, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 110110, , max:max: 120120 }, { }, { r:r: 1010, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 4747, , max:max: 5050, , inv:inv: truetrue }, { }, { r:r: 1111, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 120120, , max:max: 130130 },},
-{ { r:r: 1111, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 4444, , max:max: 4747, , inv:inv: truetrue }, { }, { r:r: 1212, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 130130, , max:max: 140140 }, { }, { r:r: 1212, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 4141, , max:max: 4444, , inv:inv: truetrue },},
-{ { r:r: 1313, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 140140, , max:max: 150150 }, { }, { r:r: 1313, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 3838, , max:max: 4141, , inv:inv: truetrue }, { }, { r:r: 1414, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 150150, , max:max: 160160 },},
-{ { r:r: 1414, , n:n: 'diastolic_blood_pressure''diastolic_blood_pressure', , min:min: 3535, , max:max: 3838, , inv:inv: truetrue },},
+const oldBaremData = [
+  // Grasa Masculina
+  { r: 1, n: 'male_ fat', min: 10, max: 14 },
+  { r: 2, n: 'male_ fat', min: 14, max: 18 },
+  { r: 3, n: 'male_ fat', min: 18, max: 21 },
+  { r: 4, n: 'male_ fat', min: 21, max: 24 },
+  { r: 5, n: 'male_ fat', min: 24, max: 27 },
+  { r: 6, n: 'male_ fat', min: 27, max: 30 },
+  { r: 7, n: 'male_ fat', min: 30, max: 33 },
+  { r: 7, n: 'male_ fat', min: 7, max: 9.99, inv: true },
+  { r: 8, n: 'male_ fat', min: 33, max: 36 },
+  { r: 8, n: 'male_ fat', min: 6, max: 7, inv: true },
+  { r: 9, n: 'male_ fat', min: 36, max: 39 },
+  { r: 9, n: 'male_ fat', min: 5, max: 6, inv: true },
+  { r: 10, n: 'male_ fat', min: 39, max: 42 },
+  { r: 10, n: 'male_ fat', min: 4, max: 5, inv: true },
+  { r: 11, n: 'male_ fat', min: 42, max: 45 },
+  { r: 11, n: 'male_ fat', min: 3, max: 4, inv: true },
+  { r: 12, n: 'male_ fat', min: 45, max: 48 },
+  { r: 12, n: 'male_ fat', min: 2, max: 3, inv: true },
+  { r: 13, n: 'male_fat', min: 48, max: 51 },
+  { r: 13, n: 'male_fat', min: 11, max: 22, inv: true },
+  { r: 14, n: 'male_fat', min: 51, max: 54 },
+  { r: 14, n: 'male_fat', min: 0, max: 11, inv: true },
+  // Grasa Masculina Deportiva
+  { r: 11, n: 'sporty_male_fat', min: 11, max: 7 },
+  { r: 22, n: 'sporty_male_fat', min: 7, max: 14 },
+  { r: 33, n: 'sporty_male_fat', min: 14, max: 17 },
+  { r: 44, n: 'sporty_male_fat', min: 17, max: 21 },
+  { r: 55, n: 'sporty_male_fat', min: 21, max: 25 },
+  { r: 66, n: 'sporty_male_fat', min: 25, max: 28 },
+  { r: 77, n: 'sporty_male_fat', min: 28, max: 31 },
+  { r: 88, n: 'sporty_male_fat', min: 31, max: 34 },
+  { r: 99, n: 'sporty_male_fat', min: 34, max: 37 },
+  { r: 10, n: 'sporty_male_fat', min: 37, max: 40 },
+  { r: 11, n: 'sporty_male_fat', min: 40, max: 43 },
+  { r: 12, n: 'sporty_male_fat', min: 43, max: 46 },
+  { r: 13, n: 'sporty_male_fat', min: 46, max: 49 },
+  { r: 14, n: 'sporty_male_fat', min: 48, max: 52 },
+  // Grasa Femenina
+  { r: 11, n: 'female_fat', min: 18, max: 22 },
+  { r: 22, n: 'female_fat', min: 22, max: 26 },
+  { r: 33, n: 'female_fat', min: 26, max: 29 },
+  { r: 44, n: 'female_fat', min: 29, max: 32 },
+  { r: 55, n: 'female_fat', min: 32, max: 35 },
+  { r: 66, n: 'female_fat', min: 35, max: 38 },
+  { r: 77, n: 'female_fat', min: 38, max: 41 },
+  { r: 77, n: 'female_fat', min: 15, max: 17.99, inv: true },
+  { r: 88, n: 'female_fat', min: 41, max: 44 },
+  { r: 88, n: 'female_fat', min: 14, max: 15, inv: true },
+  { r: 99, n: 'female_fat', min: 44, max: 47 },
+  { r: 99, n: 'female_fat', min: 13, max: 14, inv: true },
+  { r: 10, n: 'female_fat', min: 47, max: 50 },
+  { r: 10, n: 'female_fat', min: 12, max: 13, inv: true },
+  { r: 11, n: 'female_fat', min: 50, max: 53 },
+  { r: 11, n: 'female_fat', min: 11, max: 12, inv: true },
+  { r: 12, n: 'female_fat', min: 53, max: 56 },
+  { r: 12, n: 'female_fat', min: 10, max: 11, inv: true },
+  { r: 13, n: 'female_fat', min: 56, max: 59 },
+  { r: 13, n: 'female_fat', min: 9, max: 10, inv: true },
+  { r: 14, n: 'female_fat', min: 59, max: 62 },
+  { r: 14, n: 'female_fat', min: 8, max: 9, inv: true },
+  // Grasa Femenina Deportiva
+  { r: 11, n: 'sporty_female_fat', min: 11, max: 9 },
+  { r: 22, n: 'sporty_female_fat', min: 9, max: 18 },
+  { r: 33, n: 'sporty_female_fat', min: 18, max: 22 },
+  { r: 44, n: 'sporty_female_fat', min: 22, max: 25 },
+  { r: 55, n: 'sporty_female_fat', min: 25, max: 27 },
+  { r: 66, n: 'sporty_female_fat', min: 27, max: 30 },
+  { r: 77, n: 'sporty_female_fat', min: 30, max: 33 },
+  { r: 88, n: 'sporty_female_fat', min: 33, max: 36 },
+  { r: 99, n: 'sporty_female_fat', min: 36, max: 39 },
+  { r: 10, n: 'sporty_female_fat', min: 39, max: 42 },
+  { r: 11, n: 'sporty_female_fat', min: 42, max: 45 },
+  { r: 12, n: 'sporty_female_fat', min: 45, max: 48 },
+  { r: 13, n: 'sporty_female_fat', min: 48, max: 51 },
+  { r: 14, n: 'sporty_female_fat', min: 51, max: 54 },
+  // Masa Corporal (IMC)
+  { r: 11, n: 'body_mass', min: 18, max: 22 },
+  { r: 22, n: 'body_mass', min: 22, max: 25 },
+  { r: 33, n: 'body_mass', min: 25, max: 27 },
+  { r: 44, n: 'body_mass', min: 27, max: 30 },
+  { r: 55, n: 'body_mass', min: 30, max: 33 },
+  { r: 66, n: 'body_mass', min: 33, max: 36 },
+  { r: 77, n: 'body_mass', min: 36, max: 39 },
+  { r: 88, n: 'body_mass', min: 39, max: 42 },
+  { r: 88, n: 'body_mass', min: 16, max: 17.99, inv: true },
+  { r: 99, n: 'body_mass', min: 42, max: 45 },
+  { r: 99, n: 'body_mass', min: 15, max: 16, inv: true },
+  { r: 10, n: 'body_mass', min: 45, max: 48 },
+  { r: 10, n: 'body_mass', min: 14, max: 15, inv: true },
+  { r: 11, n: 'body_mass', min: 48, max: 51 },
+  { r: 11, n: 'body_mass', min: 12, max: 13, inv: true },
+  { r: 12, n: 'body_mass', min: 51, max: 54 },
+  { r: 12, n: 'body_mass', min: 11, max: 12, inv: true },
+  { r: 13, n: 'body_mass', min: 54, max: 57 },
+  { r: 13, n: 'body_mass', min: 10, max: 11, inv: true },
+  { r: 14, n: 'body_mass', min: 57, max: 60 },
+  { r: 14, n: 'body_mass', min: 9, max: 10, inv: true },
+  // Reflejos digitales
+  { r: 11, n: 'digital_reflections', min: 50, max: 45 },
+  { r: 22, n: 'digital_reflections', min: 45, max: 35 },
+  { r: 33, n: 'digital_reflections', min: 35, max: 30 },
+  { r: 44, n: 'digital_reflections', min: 30, max: 25 },
+  { r: 55, n: 'digital_reflections', min: 25, max: 20 },
+  { r: 66, n: 'digital_reflections', min: 20, max: 15 },
+  { r: 77, n: 'digital_reflections', min: 15, max: 10 },
+  { r: 88, n: 'digital_reflections', min: 10, max: 8 },
+  { r: 99, n: 'digital_reflections', min: 8, max: 6 },
+  { r: 10, n: 'digital_reflections', min: 6, max: 4 },
+  { r: 11, n: 'digital_reflections', min: 4, max: 3 },
+  { r: 12, n: 'digital_reflections', min: 3, max: 2 },
+  { r: 13, n: 'digital_reflections', min: 2, max: 1 },
+  { r: 14, n: 'digital_reflections', min: 1, max: 0 },
+  // Acomodación Visual
+  { r: 11, n: 'visual_accommodation', min: 0, max: 10 },
+  { r: 22, n: 'visual_accommodation', min: 10, max: 15 },
+  { r: 33, n: 'visual_accommodation', min: 15, max: 18 },
+  { r: 44, n: 'visual_accommodation', min: 18, max: 21 },
+  { r: 55, n: 'visual_accommodation', min: 21, max: 24 },
+  { r: 66, n: 'visual_accommodation', min: 24, max: 27 },
+  { r: 77, n: 'visual_accommodation', min: 27, max: 30 },
+  { r: 88, n: 'visual_accommodation', min: 30, max: 33 },
+  { r: 99, n: 'visual_accommodation', min: 33, max: 37 },
+  { r: 10, n: 'visual_accommodation', min: 37, max: 40 },
+  { r: 11, n: 'visual_accommodation', min: 40, max: 43 },
+  { r: 12, n: 'visual_accommodation', min: 43, max: 47 },
+  { r: 13, n: 'visual_accommodation', min: 47, max: 50 },
+  { r: 14, n: 'visual_accommodation', min: 50, max: 53 },
+  // Balance Estatico
+  { r: 11, n: 'static_balance', min: 120, max: 30 },
+  { r: 22, n: 'static_balance', min: 30, max: 25 },
+  { r: 33, n: 'static_balance', min: 25, max: 20 },
+  { r: 44, n: 'static_balance', min: 20, max: 15 },
+  { r: 55, n: 'static_balance', min: 15, max: 12 },
+  { r: 66, n: 'static_balance', min: 12, max: 9 },
+  { r: 77, n: 'static_balance', min: 9, max: 7 },
+  { r: 88, n: 'static_balance', min: 7, max: 6 },
+  { r: 99, n: 'static_balance', min: 6, max: 5 },
+  { r: 10, n: 'static_balance', min: 5, max: 4 },
+  { r: 11, n: 'static_balance', min: 4, max: 3 },
+  { r: 12, n: 'static_balance', min: 3, max: 2 },
+  { r: 13, n: 'static_balance', min: 2, max: 1 },
+  { r: 14, n: 'static_balance', min: 1, max: 0 },
+  // Hidratación Cutánea
+  { r: 11, n: 'skin_hydration', min: 0, max: 1 },
+  { r: 22, n: 'skin_hydration', min: 1, max: 2 },
+  { r: 33, n: 'skin_hydration', min: 2, max: 4 },
+  { r: 44, n: 'skin_hydration', min: 4, max: 8 },
+  { r: 55, n: 'skin_hydration', min: 8, max: 16 },
+  { r: 66, n: 'skin_hydration', min: 16, max: 32 },
+  { r: 77, n: 'skin_hydration', min: 32, max: 64 },
+  { r: 88, n: 'skin_hydration', min: 64, max: 74 },
+  { r: 99, n: 'skin_hydration', min: 74, max: 84 },
+  { r: 10, n: 'skin_hydration', min: 84, max: 94 },
+  { r: 11, n: 'skin_hydration', min: 94, max: 104 },
+  { r: 12, n: 'skin_hydration', min: 104, max: 108 },
+  { r: 13, n: 'skin_hydration', min: 108, max: 112 },
+  { r: 14, n: 'skin_hydration', min: 112, max: 120 },
+  // Tensión Arterial sistólica
+  { r: 11, n: 'systolic_blood_pressure', min: 100, max: 110 },
+  { r: 22, n: 'systolic_blood_pressure', min: 110, max: 120 },
+  { r: 33, n: 'systolic_blood_pressure', min: 120, max: 130 },
+  { r: 33, n: 'systolic_blood_pressure', min: 95, max: 99.99, inv: true },
+  { r: 44, n: 'systolic_blood_pressure', min: 130, max: 140 },
+  { r: 44, n: 'systolic_blood_pressure', min: 90, max: 95, inv: true },
+  { r: 55, n: 'systolic_blood_pressure', min: 140, max: 150 },
+  { r: 55, n: 'systolic_blood_pressure', min: 85, max: 90, inv: true },
+  { r: 66, n: 'systolic_blood_pressure', min: 150, max: 160 },
+  { r: 66, n: 'systolic_blood_pressure', min: 80, max: 85, inv: true },
+  { r: 77, n: 'systolic_blood_pressure', min: 160, max: 170 },
+  { r: 77, n: 'systolic_blood_pressure', min: 75, max: 80, inv: true },
+  { r: 88, n: 'systolic_blood_pressure', min: 170, max: 180 },
+  { r: 88, n: 'systolic_blood_pressure', min: 70, max: 75, inv: true },
+  { r: 99, n: 'systolic_blood_pressure', min: 180, max: 190 },
+  { r: 99, n: 'systolic_blood_pressure', min: 65, max: 70, inv: true },
+  { r: 10, n: 'systolic_blood_pressure', min: 190, max: 200 },
+  { r: 10, n: 'systolic_blood_pressure', min: 60, max: 65, inv: true },
+  { r: 11, n: 'systolic_blood_pressure', min: 200, max: 210 },
+  { r: 11, n: 'systolic_blood_pressure', min: 55, max: 60, inv: true },
+  { r: 12, n: 'systolic_blood_pressure', min: 210, max: 220 },
+  { r: 12, n: 'systolic_blood_pressure', min: 50, max: 55, inv: true },
+  { r: 13, n: 'systolic_blood_pressure', min: 220, max: 230 },
+  { r: 13, n: 'systolic_blood_pressure', min: 45, max: 50, inv: true },
+  { r: 14, n: 'systolic_blood_pressure', min: 230, max: 240 },
+  { r: 14, n: 'systolic_blood_pressure', min: 40, max: 45, inv: true },
+  // Tensión Arterial Diastolica
+  { r: 11, n: 'diastolic_blood_pressure', min: 60, max: 65 },
+  { r: 22, n: 'diastolic_blood_pressure', min: 65, max: 70 },
+  { r: 33, n: 'diastolic_blood_pressure', min: 70, max: 75 },
+  { r: 44, n: 'diastolic_blood_pressure', min: 75, max: 80 },
+  { r: 55, n: 'diastolic_blood_pressure', min: 80, max: 85 },
+  { r: 66, n: 'diastolic_blood_pressure', min: 85, max: 90 },
+  { r: 77, n: 'diastolic_blood_pressure', min: 90, max: 95 },
+  { r: 77, n: 'diastolic_blood_pressure', min: 57, max: 59.99, inv: true },
+  { r: 88, n: 'diastolic_blood_pressure', min: 95, max: 100 },
+  { r: 88, n: 'diastolic_blood_pressure', min: 53, max: 57, inv: true },
+  { r: 99, n: 'diastolic_blood_pressure', min: 100, max: 110 },
+  { r: 99, n: 'diastolic_blood_pressure', min: 50, max: 53, inv: true },
+  { r: 10, n: 'diastolic_blood_pressure', min: 110, max: 120 },
+  { r: 10, n: 'diastolic_blood_pressure', min: 47, max: 50, inv: true },
+  { r: 11, n: 'diastolic_blood_pressure', min: 120, max: 130 },
+  { r: 11, n: 'diastolic_blood_pressure', min: 44, max: 47, inv: true },
+  { r: 12, n: 'diastolic_blood_pressure', min: 130, max: 140 },
+  { r: 12, n: 'diastolic_blood_pressure', min: 41, max: 44, inv: true },
+  { r: 13, n: 'diastolic_blood_pressure', min: 140, max: 150 },
+  { r: 13, n: 'diastolic_blood_pressure', min: 38, max: 41, inv: true },
+  { r: 14, n: 'diastolic_blood_pressure', min: 150, max: 160 },
+  { r: 14, n: 'diastolic_blood_pressure', min: 35, max: 38, inv: true },
 ];
-];
-async
-async functionfunction mainmain() {() {
-console.log('Iniciando el proceso de "seeding" con datos completos...'Iniciando el proceso de "seeding" con datos completos...');
-awaitawait prismaprisma..rangerange..deleteManydeleteMany({});({});
-awaitawait prismaprisma..boardboard..deleteManydeleteMany({});({});
-consoleconsole..loglog(('' Tablas de baremos limpiadas.'Tablas de baremos limpiadas.'););
-consoleconsole..loglog(('' Creando los "Boards" (tipos de test)...'Creando los "Boards" (tipos de test)...'););
-constconst boardsToCreateboardsToCreate = [= [
-{ { name:name: 'fat''fat', , description:description: '% Grasa Corporal''% Grasa Corporal', , inverse:inverse: falsefalse },},
-{ { name:name: 'imc''imc', , description:description: 'Índice de Masa Corporal''Índice de Masa Corporal', , inverse:inverse: falsefalse },},
-{ { name:name: 'digital_reflex''digital_reflex', , description:description: 'Reflejos Digitales (ms)''Reflejos Digitales (ms)', , inverse:inverse: truetrue },},
-{ { name:name: 'visual_accommodation''visual_accommodation', , description:description: 'Acomodación Visual (cm)''Acomodación Visual (cm)', , inverse:inverse: truetrue },},
-{ { name:name: 'static_balance''static_balance', , description:description: 'Balance Estático (segundos)''Balance Estático (segundos)', , inverse:inverse: falsefalse }, }, // Más es // Más es mejor = no inverso en nuestra lógica de interpolaciónmejor = no inverso en nuestra lógica de interpolación
-{ { name:name: 'skin_hydration''skin_hydration', , description:description: 'Hidratación Cutánea (seg)''Hidratación Cutánea (seg)', , inverse:inverse: truetrue }, }, // Menos es // Menos es mejor (tiempo de retorno)mejor (tiempo de retorno)
-{ { name:name: 'systolic''systolic', , description:description: 'Tensión Arterial Sistólica (mmHg)''Tensión Arterial Sistólica (mmHg)', , inverse:inverse: falsefalse },},
-{ { name:name: 'diastolic''diastolic', , description:description: 'Tensión Arterial Diastólica (mmHg)''Tensión Arterial Diastólica (mmHg)', , inverse:inverse: falsefalse },},
-];];
-awaitawait prismaprisma..boardboard..createManycreateMany({ ({ data:data: boardsToCreateboardsToCreate });});
-constconst allBoardsallBoards = = awaitawait prismaprisma..boardboard..findManyfindMany();();
-constconst boardIdMapboardIdMap = = newnew MapMap((allBoardsallBoards..mapmap((bb =>=> [[bb..namename, , bb..idid]));]));
-consoleconsole..loglog((`` ${${allBoardsallBoards..lengthlength}} Boards creados.`Boards creados.`););
-consoleconsole..loglog(('' Preparando y traduciendo los "Ranges" (baremos)...'Preparando y traduciendo los "Ranges" (baremos)...'););
-constconst rangesToCreaterangesToCreate = [];= [];
-forfor ((constconst oldDataoldData ofof oldBaremDataoldBaremData) {) {
-constconst ageRangeageRange = = ageRangeMapageRangeMap[[oldDataoldData..rr];];
-ifif (!(!ageRangeageRange) ) continuecontinue;;
-letlet boardNameboardName = = '''';;
-letlet gendergender = = '''';;
-letlet is_athleteis_athlete = = falsefalse;;
-ifif ((oldDataoldData..nn..includesincludes(('male''male')) )) gendergender = = 'Masculino''Masculino';;
-ifif ((oldDataoldData..nn..includesincludes(('female''female')) )) gendergender = = 'Femenino''Femenino';;
-ifif ((oldDataoldData..nn..includesincludes(('sporty''sporty')) )) is_athleteis_athlete = = truetrue;;
-// Mapeo del nombre del test al nombre del board// Mapeo del nombre del test al nombre del board
-ifif ((oldDataoldData..nn..includesincludes(('fat''fat')) )) boardNameboardName = = 'fat''fat';;
-elseelse ifif ((oldDataoldData..nn..includesincludes(('mass''mass')) )) boardNameboardName = = 'imc''imc';;
-elseelse ifif ((oldDataoldData..nn..includesincludes(('reflection''reflection')) )) boardNameboardName = = 'digital_reflex''digital_reflex';;
-elseelse ifif ((oldDataoldData..nn..includesincludes(('accommodation''accommodation')) )) boardNameboardName = = 'visual_accommodation''visual_accommodation';;
-elseelse ifif ((oldDataoldData..nn..includesincludes(('balance''balance')) )) boardNameboardName = = 'static_balance''static_balance';;
-elseelse ifif ((oldDataoldData..nn..includesincludes(('hydration''hydration')) )) boardNameboardName = = 'skin_hydration''skin_hydration';;
-elseelse ifif ((oldDataoldData..nn..includesincludes(('systolic''systolic')) )) boardNameboardName = = 'systolic''systolic';;
-elseelse ifif ((oldDataoldData..nn..includesincludes(('diastolic''diastolic')) )) boardNameboardName = = 'diastolic''diastolic';;
-constconst boardIdboardId = = boardIdMapboardIdMap..getget((boardNameboardName););
-ifif (!(!boardIdboardId) ) continuecontinue;;
-rangesToCreaterangesToCreate..pushpush({({
-boardId:boardId: boardIdboardId,,
-min_age:min_age: ageRangeageRange..min_agemin_age,,
-max_age:max_age: ageRangeageRange..max_agemax_age,,
-gendergender,,
-is_athleteis_athlete,,
-min_value:min_value: NumberNumber((oldDataoldData..minmin),),
-max_value:max_value: NumberNumber((oldDataoldData..maxmax),),
-bio_age_min:bio_age_min: ageRangeageRange..min_agemin_age,,
-bio_age_max:bio_age_max: ageRangeageRange..max_agemax_age,,
-});});
-}}
-awaitawait prismaprisma..rangerange..createManycreateMany({({
-data:data: rangesToCreaterangesToCreate,,
-});});
-consoleconsole..loglog((`` ${${rangesToCreaterangesToCreate..lengthlength}} Ranges creados.`Ranges creados.`););
-consoleconsole..loglog(('' ¡Proceso de "seeding" completado exitosamente!'¡Proceso de "seeding" completado exitosamente!'););
+
+async function main() {
+  console.log('Iniciando el proceso de "seeding" con datos completos...');
+  await prisma.range.deleteMany({});
+  await prisma.board.deleteMany({});
+  console.log('Tablas de baremos limpiadas.');
+  console.log('Creando los "Boards" (tipos de test)...');
+  const boardsToCreate = [
+    { name: 'fat', description: '% Grasa Corporal', inverse: false },
+    { name: 'imc', description: 'Índice de Masa Corporal', inverse: false },
+    { name: 'digital_reflex', description: 'Reflejos Digitales (ms)', inverse: true },
+    { name: 'visual_accommodation', description: 'Acomodación Visual (cm)', inverse: true },
+    { name: 'static_balance', description: 'Balance Estático (segundos)', inverse: false },
+    { name: 'skin_hydration', description: 'Hidratación Cutánea (seg)', inverse: true },
+    { name: 'systolic', description: 'Tensión Arterial Sistólica (mmHg)', inverse: false },
+    { name: 'diastolic', description: 'Tensión Arterial Diastólica (mmHg)', inverse: false },
+  ];
+  await prisma.board.createMany({ data: boardsToCreate });
+  const allBoards = await prisma.board.findMany();
+  const boardIdMap = new Map(allBoards.map((bb) => [bb.name, bb.id]));
+  console.log(`${allBoards.length} Boards creados.`);
+  console.log('Preparando y traduciendo los "Ranges" (baremos)...');
+  const rangesToCreate = [];
+  for (const oldData of oldBaremData) {
+    const ageRange = ageRangeMap[oldData.r];
+    if (!ageRange) continue;
+    let boardName = '';
+    let gender = '';
+    let is_athlete = false;
+    if (oldData.n.includes('male')) gender = 'Masculino';
+    if (oldData.n.includes('female')) gender = 'Femenino';
+    if (oldData.n.includes('sporty')) is_athlete = true;
+    // Mapeo del nombre del test al nombre del board
+    if (oldData.n.includes('fat')) boardName = 'fat';
+    else if (oldData.n.includes('mass')) boardName = 'imc';
+    else if (oldData.n.includes('reflection')) boardName = 'digital_reflex';
+    else if (oldData.n.includes('accommodation')) boardName = 'visual_accommodation';
+    else if (oldData.n.includes('balance')) boardName = 'static_balance';
+    else if (oldData.n.includes('hydration')) boardName = 'skin_hydration';
+    else if (oldData.n.includes('systolic')) boardName = 'systolic';
+    else if (oldData.n.includes('diastolic')) boardName = 'diastolic';
+    const boardId = boardIdMap.get(boardName);
+    if (!boardId) continue;
+    rangesToCreate.push({
+      boardId: boardId,
+      min_age: ageRange.min_age,
+      max_age: ageRange.max_age,
+      gender: gender,
+      is_athlete: is_athlete,
+      min_value: Number(oldData.min),
+      max_value: Number(oldData.max),
+      bio_age_min: ageRange.min_age,
+      bio_age_max: ageRange.max_age,
+    });
+  }
+  await prisma.range.createMany({ data: rangesToCreate });
+  console.log(`${rangesToCreate.length} Ranges creados.`);
+  console.log('¡Proceso de "seeding" completado exitosamente!');
 }
-}
-main
-main()()
-..catchcatch((((ee) ) =>=> {{
-consoleconsole..errorerror(('' Error durante el proceso de seeding:'Error durante el proceso de seeding:', , ee););
-processprocess..exitexit((11););
-})})
-..finallyfinally((asyncasync () () =>=> {{
-awaitawait prismaprisma..$disconnect$disconnect();();
-});});
+
+main()
+  .catch((e) => {
+    console.error('Error durante el proceso de seeding:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

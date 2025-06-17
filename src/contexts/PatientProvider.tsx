@@ -1,70 +1,78 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useCallback, Dispatch, SetStateAction } from 'react';
-import { getPatientWithHistory } from '@/lib/actions/patients'; // Importa la Server Action
+import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import type { Patient, BiophysicalTest } from '@prisma/client';
 
-// Tipo para el paciente con su historial
-export type PatientWithHistory = Awaited<ReturnType<typeof getPatientWithHistory>>;
+// Importamos la Server Action con el nombre correcto
+import { getPatientById } from '@/lib/actions/patients';
 
+// Definimos un tipo completo para el paciente que incluye sus relaciones
+type PatientWithDetails = Patient & {
+  biophysical_tests?: BiophysicalTest[];
+};
+
+// Define la forma del contexto que consumirán los componentes
 interface PatientContextType {
-  currentPatient: PatientWithHistory | null;
-  setCurrentPatient: (patient: PatientWithHistory | null) => void;
+  currentPatient: PatientWithDetails | null;
   isLoading: boolean;
-  setIsLoading: Dispatch<SetStateAction<boolean>>; // Expone la función de actualización de isLoading
   error: string | null;
-  setError: Dispatch<SetStateAction<string | null>>; // Expone la función de actualización de error
-  clearError: () => void;
+  setCurrentPatient: (patient: PatientWithDetails | null) => void;
+  // Esta es la función principal para cargar un paciente desde el backend
   fetchAndSetCurrentPatient: (patientId: string) => Promise<boolean>;
 }
 
 const PatientContext = createContext<PatientContextType | undefined>(undefined);
 
+// Hook personalizado para facilitar el uso del contexto
+export function usePatient() {
+  const context = useContext(PatientContext);
+  if (context === undefined) {
+    throw new Error('usePatient debe ser usado dentro de un PatientProvider');
+  }
+  return context;
+}
+
+// El componente Provider que envuelve tu aplicación o layout
 export function PatientProvider({ children }: { children: ReactNode }) {
-  const [currentPatient, setCurrentPatient] = useState<PatientWithHistory | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [currentPatient, setCurrentPatient] = useState<PatientWithDetails | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const clearError = useCallback(() => setError(null), []);
-
-  const fetchAndSetCurrentPatient = useCallback(async (patientId: string) => {
+  // Función para cargar un paciente usando la Server Action
+  const fetchAndSetCurrentPatient = useCallback(async (patientId: string): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
     try {
-      const patientData = await getPatientWithHistory(patientId);
-      if (patientData) {
-        setCurrentPatient(patientData);
-        return true;
+      // **CORRECCIÓN CLAVE:** Llamamos a la Server Action 'getPatientById'
+      const patientData = await getPatientById(patientId);
+      
+      if (!patientData) {
+        throw new Error('Paciente no encontrado.');
       }
-      setError('No se encontró el paciente.');
-      return false;
-    } catch (err: any) {
-      setError(err.message || 'Error desconocido al cargar el paciente.');
-      return false;
+
+      setCurrentPatient(patientData as PatientWithDetails);
+      return true; // Éxito
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ocurrió un error desconocido.');
+      setCurrentPatient(null);
+      return false; // Fracaso
     } finally {
       setIsLoading(false);
     }
   }, []);
 
+  // El valor que se comparte a través del contexto
+  const value = {
+    currentPatient,
+    isLoading,
+    error,
+    setCurrentPatient,
+    fetchAndSetCurrentPatient,
+  };
+
   return (
-    <PatientContext.Provider value={{ 
-      currentPatient, 
-      setCurrentPatient, 
-      isLoading, 
-      setIsLoading, // Se expone
-      error, 
-      setError,     // Se expone
-      clearError, 
-      fetchAndSetCurrentPatient 
-    }}>
+    <PatientContext.Provider value={value}>
       {children}
     </PatientContext.Provider>
   );
 }
-
-export const usePatient = () => {
-  const context = useContext(PatientContext);
-  if (!context) {
-    throw new Error('usePatient debe ser usado dentro de un PatientProvider');
-  }
-  return context;
-};
