@@ -1,177 +1,139 @@
 // src/utils/biofisicaBoardCalculations.ts
-import { BoardData, BiofisicaField } from '@/app/historias/types/biofisica';
 
-export const calculationBoards: BoardData[] = [
-  // Aquí irían los datos de referencia para los cálculos
-  // Por ahora dejamos un array vacío que se llenará desde el backend
-];
+import type { Board, Range } from '@prisma/client';
 
-// Obtener el nombre del campo de grasa según género
-export function getFatName(formType: number): string {
-  switch (formType) {
-    case 1: return 'female_fat';            // Femenino
-    case 2: return 'male_fat';              // Masculino
-    case 3: return 'sporty_female_fat';     // Femenino Deportista
-    case 4: return 'sporty_male_fat';       // Masculino Deportista
-    default: return '';
-  }
+// Tipo extendido para facilitar el manejo de datos, asegurando que cada Board tenga sus Ranges
+export type BoardWithRanges = Board & {
+  ranges: Range[];
+};
+
+// Tipo para los valores del formulario que recibimos para el cálculo
+interface CalculationFormValues {
+  [key: string]: number;
 }
 
-// Función auxiliar: obtener rango de edades
-function getRange(start: number, end: number, inverse: boolean = false): number[] {
-  const arr = [];
-  for (let i = start; i <= end; i++) {
-    arr.push(i);
-  }
-  return inverse ? arr.reverse() : arr;
+// Tipo para los resultados de las edades parciales
+interface PartialAges {
+  [key: string]: number | null;
 }
 
-// Función auxiliar: verificar si un valor está en el rango del board
-function isValueInBoardRange(board: BoardData, value: number): boolean {
-  const boardMin = parseFloat(board.min);
-  const boardMax = parseFloat(board.max);
+/**
+ * Encuentra el baremo (Range) específico que corresponde a los datos del paciente.
+ * @param board El tipo de test (ej. % Grasa) con todos sus baremas.
+ * @param cronoAge La edad cronológica del paciente.
+ * @param gender El género del paciente.
+ * @param isAthlete Si el paciente es atleta.
+ * @param inputValue El valor medido para este test.
+ * @returns El objeto Range correspondiente o null si no se encuentra.
+ */
+function findMatchingRange(
+  board: BoardWithRanges,
+  cronoAge: number,
+  gender: 'Masculino' | 'Femenino',
+  isAthlete: boolean,
+  inputValue: number
+): Range | null {
+  // 1. Filtra los rangos que aplican a la edad, género y condición de atleta del paciente.
+  const relevantRanges = board.ranges.filter(r => 
+    cronoAge >= r.min_age && 
+    cronoAge <= r.max_age &&
+    r.gender === gender &&
+    r.is_athlete === isAthlete
+  );
   
-  // Si el board tiene min > max (rango invertido)
-  if (boardMin > boardMax) {
-    return value <= boardMin && value >= boardMax;
-  }
-  
-  // Rango normal
-  return value >= boardMin && value <= boardMax;
+  // 2. Dentro de esos rangos aplicables, encuentra aquel cuyo rango de valores (min_value, max_value) contiene el valor ingresado.
+  return relevantRanges.find(r => inputValue >= r.min_value && inputValue <= r.max_value) || null;
 }
 
-// Calcular edad absoluta para un campo simple
-export function getAbsoluteResult(
-  name: string,                   // Nombre del campo (ej. "male_fat")
-  value: string | number | null,  // Valor ingresado por el usuario
-  boards: BoardData[]             // Array de boards del backend
+/**
+ * Calcula la edad biológica parcial usando interpolación lineal.
+ * @param range El baremo específico encontrado.
+ * @param inputValue El valor medido.
+ * @param isInverse Si la lógica del test es inversa (menos es mejor).
+ * @returns La edad biológica parcial calculada.
+ */
+function calculatePartialAge(
+  range: Range,
+  inputValue: number,
+  isInverse: boolean
 ): number {
-  // Si no hay valor, devolver null
-  if (value === null || value === undefined || value === '') {
-    return 80; // Valor por defecto (edad máxima)
+  const valueRange = range.max_value - range.min_value;
+  const ageRange = range.bio_age_max - range.bio_age_min;
+
+  // Evitar división por cero si el rango de valores es un punto único.
+  if (valueRange === 0) {
+    return range.bio_age_min;
   }
+
+  // Calcula la proporción del valor de entrada dentro de su rango (0 a 1).
+  let proportion = (inputValue - range.min_value) / valueRange;
   
-  // Convertir a número si es string
-  const numericValue = typeof value === 'string' ? parseFloat(value) : value;
-  
-  // Filtrar boards por nombre
-  const fieldBoards = boards.filter(b => b.name === name);
-  if (fieldBoards.length === 0) {
-    console.warn(`No boards found for field: ${name}`);
-    return 80; // Valor por defecto
-  }
-  
-  // Encontrar el board específico que contiene el valor
-  const targetBoard = fieldBoards.find(board => isValueInBoardRange(board, numericValue));
-  if (!targetBoard) {
-    // Si no se encuentra un board exacto, buscar el límite más cercano
-    if (numericValue < parseFloat(fieldBoards[0].min)) {
-      return fieldBoards[0].range.min; // Valor está por debajo del mínimo
-    }
-    
-    if (numericValue > parseFloat(fieldBoards[fieldBoards.length - 1].max)) {
-      return fieldBoards[fieldBoards.length - 1].range.max; // Valor está por encima del máximo
-    }
-    
-    console.warn(`No matching board found for ${name} with value ${numericValue}`);
-    return 80; // Valor por defecto
-  }
-  
-  // Obtener rango de edad y valores del board
-  const range = targetBoard.range;
-  const boardMin = parseFloat(targetBoard.min);
-  const boardMax = parseFloat(targetBoard.max);
-  
-  // Si el rango de edad es un punto, devolver ese valor
-  if (range.min === range.max) {
-    return range.min;
-  }
-  
-  // Calcular la proporción del valor dentro del rango de la métrica
-  const metricRange = Math.abs(boardMax - boardMin);
-  const ageRange = Math.abs(range.max - range.min);
-  
-  // Interpolación lineal
-  let proportion = (numericValue - boardMin) / metricRange;
-  
-  // Si el board es inverso, invertir la proporción
-  if (targetBoard.inverse === 1) {
+  // Si la prueba es inversa, un valor más alto significa una proporción "peor", así que invertimos.
+  if (isInverse) {
     proportion = 1 - proportion;
   }
-  
-  // Calcular la edad interpolada
-  const age = Math.round(range.min + (proportion * ageRange));
-  
-  // Asegurar que la edad esté dentro del rango
-  return Math.max(range.min, Math.min(age, range.max));
+
+  // Aplica la proporción al rango de edad biológica para obtener el resultado final.
+  return range.bio_age_min + (proportion * ageRange);
 }
 
-// Calcular edad absoluta para campos con dimensiones (alto/largo/ancho)
-export function getDimensionsResult(field: BiofisicaField, boards: BoardData[]): number {
-  // Convertir high, long, width a números
-  const highVal = typeof field.high === 'string' ? parseFloat(field.high) : field.high;
-  const longVal = typeof field.long === 'string' ? parseFloat(field.long) : field.long;
-  const widthVal = typeof field.width === 'string' ? parseFloat(field.width) : field.width;
+/**
+ * Función principal que orquesta todos los cálculos del test biofísico.
+ */
+export function calculateBiofisicaResults(
+  boards: BoardWithRanges[],
+  formValues: CalculationFormValues,
+  cronoAge: number,
+  gender: 'Masculino' | 'Femenino',
+  isAthlete: boolean
+): { biologicalAge: number; differentialAge: number; partialAges: PartialAges } {
   
-  // Verificar que todos los valores sean números válidos
-  if (typeof highVal === 'number' && !isNaN(highVal) &&
-      typeof longVal === 'number' && !isNaN(longVal) &&
-      typeof widthVal === 'number' && !isNaN(widthVal)) {
-    
-    // Calcular promedio
-    const average = (highVal + longVal + widthVal) / 3;
-    
-    // Usar getAbsoluteResult con el promedio
-    return getAbsoluteResult(field.name, average, boards);
+  const partialAges: PartialAges = {};
+  const validPartialAges: number[] = [];
+
+  // Mapeo de los campos del formulario a los nombres de los 'Board' en la BD.
+  // Excluimos 'pulse' como se solicitó.
+  const testMappings = {
+    fat: 'fat',
+    imc: 'imc',
+    digital_reflex: 'digital_reflex',
+    visual_accommodation: 'visual_accommodation',
+    static_balance: 'static_balance',
+    skin_hydration: 'skin_hydration',
+    systolic: 'systolic',
+    diastolic: 'diastolic',
+  };
+
+  for (const [formKey, boardName] of Object.entries(testMappings)) {
+    const board = boards.find(b => b.name === boardName);
+    const value = formValues[formKey];
+
+    if (board && value !== undefined && !isNaN(value)) {
+      const matchingRange = findMatchingRange(board, cronoAge, gender, isAthlete, value);
+      
+      if (matchingRange) {
+        const partialAge = calculatePartialAge(matchingRange, value, board.inverse);
+        partialAges[formKey] = partialAge;
+        validPartialAges.push(partialAge);
+      } else {
+        partialAges[formKey] = null; // No se encontró un baremo aplicable
+      }
+    } else {
+      partialAges[formKey] = null; // El valor no fue ingresado o no es un número
+    }
   }
-  
-  // Si algún valor no es válido, devolver valor por defecto
-  return 80;
-}
 
-// Construir el payload para guardar en el backend
-export function buildSavePayload(
-  formData: BiofisicaFormData,
-  patientId: string
-): {
-  userId: string;
-  chronological: number;
-  biological: number;
-  differential: number;
-  gender: number;
-  form: string;
-} {
-  // Filtrar campos que tienen valores relativos y absolutos
-  const formFields = formData.fields
-    .filter(field => {
-      if (field.dimensions) {
-        return field.high !== null && field.long !== null && field.width !== null && field.absolute_value !== null;
-      }
-      return field.relative_value !== null && field.absolute_value !== null;
-    })
-    .map(field => {
-      if (field.dimensions) {
-        return {
-          name: field.name,
-          high: field.high,
-          long: field.long,
-          width: field.width,
-          absolute_value: field.absolute_value
-        };
-      }
-      return {
-        name: field.name,
-        relative_value: field.relative_value,
-        absolute_value: field.absolute_value
-      };
-    });
-  
-  return {
-    userId: patientId,
-    chronological: formData.chronological || 0,
-    biological: formData.biological || 0,
-    differential: formData.differential || 0,
-    gender: formData.formType || 1,
-    form: JSON.stringify(formFields)
+  // Calcular la Edad Biofísica Final promediando las edades parciales válidas.
+  const biologicalAge = validPartialAges.length > 0
+    ? validPartialAges.reduce((sum, age) => sum + age, 0) / validPartialAges.length
+    : 0;
+
+  // Calcular la Edad Diferencial.
+  const differentialAge = biologicalAge > 0 ? biologicalAge - cronoAge : 0;
+
+  return { 
+    biologicalAge, 
+    differentialAge, 
+    partialAges 
   };
 }

@@ -1,7 +1,6 @@
-// src/contexts/PatientProvider.tsx (COMPLETO Y CORREGIDO)
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, Dispatch, SetStateAction } from 'react';
 import { getPatientWithHistory } from '@/lib/actions/patients'; // Importa la Server Action
 
 // Tipo para el paciente con su historial
@@ -11,7 +10,9 @@ interface PatientContextType {
   currentPatient: PatientWithHistory | null;
   setCurrentPatient: (patient: PatientWithHistory | null) => void;
   isLoading: boolean;
+  setIsLoading: Dispatch<SetStateAction<boolean>>; // Expone la función de actualización de isLoading
   error: string | null;
+  setError: Dispatch<SetStateAction<string | null>>; // Expone la función de actualización de error
   clearError: () => void;
   fetchAndSetCurrentPatient: (patientId: string) => Promise<boolean>;
 }
@@ -45,7 +46,16 @@ export function PatientProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <PatientContext.Provider value={{ currentPatient, setCurrentPatient, isLoading, error, clearError, fetchAndSetCurrentPatient }}>
+    <PatientContext.Provider value={{ 
+      currentPatient, 
+      setCurrentPatient, 
+      isLoading, 
+      setIsLoading, // Se expone
+      error, 
+      setError,     // Se expone
+      clearError, 
+      fetchAndSetCurrentPatient 
+    }}>
       {children}
     </PatientContext.Provider>
   );

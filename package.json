@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed": "npx tsx prisma/seed.ts",
+    "db:reset": "npx prisma migrate reset",
+    "db:generate": "npx prisma generate",
+    "db:studio": "npx prisma studio"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
@@ -30,7 +34,6 @@
     "xlsx": "^0.18.5",
     "zod": "^3.25.57"
   },
-  "seed": "ts-node --compiler-options \"{\\\"module\\\":\\\"CommonJS\\\"}\" prisma/seed.ts",
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "@tailwindcss/postcss": "^4.1.5",
@@ -54,7 +57,12 @@
     "prisma": "^6.9.0",
     "tailwindcss": "3.3.3",
     "ts-node": "^10.9.2",
+    "tsx": "^4.7.0",
     "typescript": "5.1.6",
     "typescript-eslint": "^8.33.1"
-  }
+  },
+
+"prisma": {
+  "seed": "tsx prisma/seed.ts"
+}
 }

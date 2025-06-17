@@ -10,79 +10,74 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modelo para los pacientes (Historias Clínicas)
 model Patient {
-  id                      String   @id @default(cuid())
-  // --- Información Personal ---
-  surnames                String
-  names                   String
-  identification_number   String   @unique
-  nationality             String
-  birth_date              DateTime
-  // --- Edad Cronológica (se puede calcular, pero la guardamos por conveniencia) ---
-  chronological_age       Int
-  gender                  String
-  birth_place             String?
-  marital_status          String?
-  occupation              String?
-  // --- Contacto y Dirección ---
-  address                 String?
-  country                 String?
-  state_province          String?
-  city                    String?
-  phone_number            String?
-  email                   String?  @unique
-  // --- Otros ---
-  history_date            DateTime @default(now())
-  photo_url               String?
-  blood_type              String?
-  general_observations    String?
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  id                    Int      @id @default(autoincrement())
+  names                 String
+  surnames              String
+  identification_number String
+  nationality           String
+  birth_date            DateTime
+  chronological_age     Float
+  gender                String
+  birth_place           String?
+  marital_status        String?
+  occupation            String?
+  address               String?
+  country               String?
+  state_province        String?
+  city                  String?
+  phone_number          String?
+  email                 String?
+  blood_type            String?
+  general_observations  String?
+  photo_url             String?
+  history_date          String?
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
 
-  // --- Relaciones ---
-  // Un paciente puede tener muchos tests biofísicos
-  biophysics_tests        BiophysicsTest[]
+  biophysical_tests BiophysicalTest[]
+
+  @@map("patients")
 }
 
-// Modelo para guardar cada test biofísico realizado
-model BiophysicsTest {
-  id                  String     @id @default(cuid())
-  patientId           String
-  // --- Edades ---
-  chronological_age   Int
-  biological_age      Float
-  differential_age    Float
-  // --- Datos del Formulario ---
-  // Guardamos todos los valores relativos y absolutos en un objeto JSON
-  form_data           Json
-  createdAt           DateTime   @default(now())
+model BiophysicalTest {
+  id                Int      @id @default(autoincrement())
+  patient_id        Int
+  chronological_age Float
+  biological_age    Float
+  differential_age  Float
+  gender            String
+  is_athlete        Boolean
+  measurements      String
+  partial_ages      String
+  test_date         DateTime
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
 
-  // --- Relación ---
-  patient             Patient    @relation(fields: [patientId], references: [id])
+  patient Patient @relation(fields: [patient_id], references: [id])
+
+  @@map("biophysical_tests")
 }
 
-// Modelo para los rangos de edad (ej. 21-28 años)
 model Range {
-  id        Int      @id @default(autoincrement())
-  min       Int
-  max       Int
-  createdAt DateTime @default(now())
-  // --- Relación ---
-  boards    Board[]
+  id     Int   @id @default(autoincrement())
+  minAge Float @map("min_age")
+  maxAge Float @map("max_age")
+
+  boards Board[]
+
+  @@map("ranges")
 }
 
-// Modelo para los baremos de cálculo (la lógica principal)
 model Board {
-  id        Int      @id @default(autoincrement())
-  rangeId   Int
-  type      Int // 1: Biofísica
-  name      String
-  min_val   String
-  max_val   String
-  inverse   Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id      Int     @id @default(autoincrement())
+  rangeId Int     @map("range_id")
+  name    String
+  minVal  String  @map("min_val")
+  maxVal  String  @map("max_val")
+  inverse Boolean @default(false)
 
-  // --- Relación ---
-  range     Range    @relation(fields: [rangeId], references: [id])
+  range Range @relation(fields: [rangeId], references: [id])
+
+  @@map("boards")
 }

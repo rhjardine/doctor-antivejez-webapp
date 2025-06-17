@@ -1,120 +1,166 @@
-// src/app/api/patients/route.ts
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
-import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma'; // 
-
-// --- GET: OBTENER LISTA DE PACIENTES ---
-export async function GET(request: NextRequest) {
-  // Envolvemos TODO en un bloque try...catch para garantizar una respuesta.
+export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const search = searchParams.get('search') || '';
+    const query = searchParams.get('query') || '';
 
-    // Cláusula de búsqueda opcional
-    const whereClause = search ? {
-      OR: [
-        { names: { contains: search, mode: 'insensitive' as const } },
-        { surnames: { contains: search, mode: 'insensitive' as const } },
-        { identification_number: { contains: search, mode: 'insensitive' as const } }
-      ],
-    } : {};
+    const whereClause = query
+      ? {
+          OR: [
+            { names: { contains: query, mode: 'insensitive' } },
+            { surnames: { contains: query, mode: 'insensitive' } },
+            { identification_number: { contains: query, mode: 'insensitive' } },
+          ],
+        }
+      : {};
 
     const patients = await prisma.patient.findMany({
       where: whereClause,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { created_at: 'desc' },
     });
 
-    // Éxito: Devolvemos los pacientes encontrados (puede ser un array vacío).
-    return NextResponse.json(patients);
-
-  } catch (error) {
-    // Falla: Capturamos cualquier error y devolvemos una respuesta de error 500.
+    return NextResponse.json(patients, { status: 200 });
+  } catch (error: any) {
     console.error('Error en GET /api/patients:', error);
     return NextResponse.json(
-      { message: 'Error interno del servidor al obtener los pacientes.', details: error instanceof Error ? error.message : 'Unknown error' },
+      { message: 'Error al obtener pacientes', error: error.message },
       { status: 500 }
     );
   }
 }
 
-// --- POST: CREAR UN NUEVO PACIENTE ---
-// Función para calcular la edad (más seguro hacerlo en el backend)
+// Función auxiliar para calcular la edad cronológica
 function calculateChronologicalAge(birthDate: Date): number {
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
     age--;
   }
   return age;
 }
 
-export async function POST(request: NextRequest) {
-  // Envolvemos TODO en un bloque try...catch.
+export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    // Extraemos los datos del cuerpo de la solicitud
+    const { birth_date, history_date, chronological_age: received_chronological_age, ...restOfData } = await request.json();
 
-    // Validación de campos esenciales
-    if (!body.names || !body.surnames || !body.identification_number || !body.birth_date) {
-      return NextResponse.json(
-        { message: 'Los campos nombres, apellidos, identificación y fecha de nacimiento son requeridos.' },
-        { status: 400 }
-      );
+    // Convertir birth_date a Date. Si no existe, se considera null.
+    const parsedBirthDate = birth_date ? new Date(birth_date) : null;
+
+    // Calcular la edad cronológica en el backend si birth_date es válida
+    let finalChronologicalAge: number | null = null;
+    if (parsedBirthDate instanceof Date && !isNaN(parsedBirthDate.getTime())) {
+      finalChronologicalAge = calculateChronologicalAge(parsedBirthDate);
+    } else if (typeof received_chronological_age === 'number') {
+      // Si no se puede calcular desde birth_date pero se recibe un número válido, usarlo
+      finalChronologicalAge = received_chronological_age;
+    } else if (typeof received_chronological_age === 'string' && !isNaN(parseFloat(received_chronological_age))) {
+        finalChronologicalAge = parseFloat(received_chronological_age);
     }
 
-    // Conversión y validación de la fecha
-    const birthDateObj = new Date(body.birth_date);
-    if (isNaN(birthDateObj.getTime())) {
-      return NextResponse.json({ message: 'Formato de fecha de nacimiento inválido. Use YYYY-MM-DD.' }, { status: 400 });
+
+    // Convertir history_date a string con formato 'YYYY-MM-DD' o null
+    const parsedHistoryDate = history_date ? new Date(history_date).toISOString().split('T')[0] : null;
+
+    // Validar que chronological_age no sea null antes de crear el paciente si es un campo requerido
+    if (finalChronologicalAge === null) {
+      throw new Error('La edad cronológica es obligatoria y no pudo ser calculada.');
     }
 
-    // Preparar los datos para Prisma
-    const patientData = {
-      surnames: body.surnames,
-      names: body.names,
-      identification_number: body.identification_number,
-      nationality: body.nationality,
-      birth_date: birthDateObj, // Usar el objeto Date
-      chronological_age: calculateChronologicalAge(birthDateObj), // Calcular la edad aquí
-      gender: body.gender,
-      // ... resto de los campos ...
-      birth_place: body.birth_place,
-      marital_status: body.marital_status,
-      occupation: body.occupation,
-      address: body.address,
-      country: body.country,
-      state_province: body.state_province,
-      city: body.city,
-      phone_number: body.phone_number,
-      email: body.email,
-      blood_type: body.blood_type,
-      general_observations: body.general_observations,
-      photo_url: body.photo_url?.startsWith('blob:') ? null : body.photo_url, // Evitar guardar blob URLs
-    };
 
-    const newPatient = await prisma.patient.create({
-      data: patientData,
+    const patient = await prisma.patient.create({
+      data: {
+        ...restOfData, // El resto de los campos de data
+        chronological_age: finalChronologicalAge, // Usamos la edad calculada/parseada en el backend
+        birth_date: parsedBirthDate, // Campo birth_date con el tipo correcto (Date o null)
+        history_date: parsedHistoryDate, // Campo history_date con el tipo correcto (string o null)
+      },
     });
 
-    // Éxito: Devolvemos el paciente recién creado.
-    return NextResponse.json(newPatient, { status: 201 });
-
+    return NextResponse.json(patient, { status: 201 });
   } catch (error: any) {
     console.error('Error en POST /api/patients:', error);
-
-    // Manejo específico para violación de constraint 'unique' (ej. cédula o email duplicado)
-    if (error.code === 'P2002') {
-      const fields = error.meta?.target || ['campo'];
-      return NextResponse.json(
-        { message: `Ya existe un paciente con estos datos: ${fields.join(', ')}` },
-        { status: 409 } // 409 Conflict
-      );
-    }
-
-    // Falla genérica: Devolvemos un error 500.
     return NextResponse.json(
-      { message: 'Error del servidor al crear el paciente.', details: error.message },
+      { message: 'Error al crear paciente', error: error.message || 'Error desconocido' },
       { status: 500 }
     );
   }
+}
+
+export async function PUT(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+
+        if (!id) {
+            return NextResponse.json({ message: 'ID de paciente no proporcionado' }, { status: 400 });
+        }
+
+        const { chronological_age: received_chronological_age, birth_date, history_date, ...restOfData } = await request.json();
+
+        // Convertir birth_date a Date. Si no existe, se considera null.
+        const parsedBirthDate = birth_date ? new Date(birth_date) : null;
+
+        // Calcular la edad cronológica en el backend si birth_date es válida
+        let finalChronologicalAge: number | null = null;
+        if (parsedBirthDate instanceof Date && !isNaN(parsedBirthDate.getTime())) {
+            finalChronologicalAge = calculateChronologicalAge(parsedBirthDate);
+        } else if (typeof received_chronological_age === 'number') {
+            finalChronologicalAge = received_chronological_age;
+        } else if (typeof received_chronological_age === 'string' && !isNaN(parseFloat(received_chronological_age))) {
+            finalChronologicalAge = parseFloat(received_chronological_age);
+        }
+
+        // Convertir history_date a string con formato 'YYYY-MM-DD' o null
+        const parsedHistoryDate = history_date ? new Date(history_date).toISOString().split('T')[0] : null;
+
+        // Validar que chronological_age no sea null antes de actualizar el paciente si es un campo requerido
+        if (finalChronologicalAge === null) {
+            throw new Error('La edad cronológica es obligatoria y no pudo ser calculada.');
+        }
+
+        const updatedPatient = await prisma.patient.update({
+            where: { id: parseInt(id) },
+            data: {
+                ...restOfData,
+                birth_date: parsedBirthDate,
+                history_date: parsedHistoryDate,
+                chronological_age: finalChronologicalAge,
+            },
+        });
+
+        return NextResponse.json(updatedPatient, { status: 200 });
+    } catch (error: any) {
+        console.error('Error en PUT /api/patients:', error);
+        return NextResponse.json(
+            { message: 'Error al actualizar paciente', error: error.message || 'Error desconocido' },
+            { status: 500 }
+        );
+    }
+}
+
+export async function DELETE(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+
+        if (!id) {
+            return NextResponse.json({ message: 'ID de paciente no proporcionado' }, { status: 400 });
+        }
+
+        await prisma.patient.delete({
+            where: { id: parseInt(id) },
+        });
+
+        return NextResponse.json({ message: 'Paciente eliminado exitosamente' }, { status: 200 });
+    } catch (error: any) {
+        console.error('Error en DELETE /api/patients:', error);
+        return NextResponse.json(
+            { message: 'Error al eliminar paciente', error: error.message || 'Error desconocido' },
+            { status: 500 }
+        );
+    }
 }

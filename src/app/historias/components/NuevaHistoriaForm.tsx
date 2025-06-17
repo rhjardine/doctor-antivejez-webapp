@@ -31,9 +31,29 @@ interface FormData extends Partial<Patient> {
 
 
 const initialFormData: FormData = {
-  nationality: 'Venezolano(a)',
-  gender: 'Femenino',
-  // ... inicializar otros campos con valores por defecto
+  names: '',
+  surnames: '',
+  identification_number: '',
+  nationality: 'Venezolano(a)', // O un valor por defecto como ''
+  birth_date: '',
+  gender: 'Femenino', // O un valor por defecto como ''
+  birth_place: '',
+  marital_status: '',
+  occupation: '',
+  address: '',
+  country: '',
+  state_province: '',
+  city: '',
+  phone_number: '',
+  email: '',
+  blood_type: '',
+  general_observations: '',
+  photo_url: '',
+  history_date: new Date().toISOString().split('T')[0], // Fecha actual por defecto
+  // Campos opcionales de la sección detallada
+  referidoPor: '',
+  noHistoria: '',
+  antecedentesFamiliares: '',
 };
 
 export default function NuevaHistoriaForm({ initialData, onSave, onCancel, patientId }: NuevaHistoriaFormProps) {
