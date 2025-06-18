@@ -3,10 +3,10 @@
 
 import React, { useState } from 'react';
 import { usePatient, PatientWithHistory } from '@/contexts/PatientProvider';
-import NuevaHistoriaForm from './NuevaHistoriaForm';
+import NuevaHistoriaForm from './PatientForm';
 import PatientHeader from '@/components/PatientHeader';
-import EdadBiologicaMain from './EdadBiologicaMain';
-import EdadBiofisicaTestView from './EdadBiofisicaTestView';
+import EdadBiologicaMain from '../biophysics-test/EdadBiologicaMain';
+import EdadBiofisicaTestView from '../biophysics-test/BiophysicsTestView';
 // ... otros imports de UI ...
 
 interface HistoriasClientManagerProps {

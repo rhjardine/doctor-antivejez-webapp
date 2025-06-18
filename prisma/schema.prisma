@@ -7,77 +7,61 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
 }
 
 model Patient {
-  id                    Int      @id @default(autoincrement())
-  names                 String
-  surnames              String
-  identification_number String
-  nationality           String
-  birth_date            DateTime
-  chronological_age     Float
-  gender                String
-  birth_place           String?
-  marital_status        String?
-  occupation            String?
-  address               String?
-  country               String?
-  state_province        String?
-  city                  String?
-  phone_number          String?
-  email                 String?
-  blood_type            String?
-  general_observations  String?
-  photo_url             String?
-  history_date          String?
-  created_at            DateTime @default(now())
-  updated_at            DateTime @updatedAt
-
-  biophysical_tests BiophysicalTest[]
-
-  @@map("patients")
+  id                String            @id @default(cuid())
+  names             String
+  surnames          String
+  document_type     String?
+  document_number   String?           @unique
+  birth_date        DateTime?
+  chronological_age Int?
+  gender            String?
+  email             String?           @unique
+  phone             String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  biophysics_tests  BiophysicsTest[]
 }
 
-model BiophysicalTest {
-  id                Int      @id @default(autoincrement())
-  patient_id        Int
-  chronological_age Float
+model BiophysicsTest {
+  id                String      @id @default(cuid())
+  test_date         DateTime    @default(now())
+  chronological_age Int
   biological_age    Float
   differential_age  Float
-  gender            String
-  is_athlete        Boolean
-  measurements      String
-  partial_ages      String
-  test_date         DateTime
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
-
-  patient Patient @relation(fields: [patient_id], references: [id])
-
-  @@map("biophysical_tests")
-}
-
-model Range {
-  id     Int   @id @default(autoincrement())
-  minAge Float @map("min_age")
-  maxAge Float @map("max_age")
-
-  boards Board[]
-
-  @@map("ranges")
+  form_data         Json
+  patientId         String
+  patient           Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 }
 
 model Board {
-  id      Int     @id @default(autoincrement())
-  rangeId Int     @map("range_id")
-  name    String
-  minVal  String  @map("min_val")
-  maxVal  String  @map("max_val")
-  inverse Boolean @default(false)
+  id          String  @id @default(cuid())
+  name        String  @unique
+  description String
+  inverse     Boolean @default(false)
 
-  range Range @relation(fields: [rangeId], references: [id])
+  // CORRECCIÓN CLAVE: Asegurarse de que el nombre de la relación sea 'ranges' (plural)
+  // Esto define la relación "uno a muchos" con el modelo Range.
+  ranges      Range[]
+}
 
-  @@map("boards")
+model Range {
+  id          String   @id @default(cuid())
+  min_age     Int
+  max_age     Int
+  gender      String
+  is_athlete  Boolean
+  min_value   Float
+  max_value   Float
+  
+  // Relación con Board
+  boardId     String
+  board       Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@index([boardId])
 }

@@ -3,8 +3,8 @@
 
 import { useState } from 'react';
 import { HistoriaClinicaData } from '@/types/historia';
-import NuevaHistoriaForm from './components/NuevaHistoriaForm';
-import EdadBiologicaMain from './components/EdadBiologicaMain';
+import NuevaHistoriaForm from '../../components/features/patient/PatientForm';
+import EdadBiologicaMain from '../../components/features/biophysics-test/EdadBiologicaMain';
 import GuiaPacienteTab from '@/components/UI/GuiaPacienteTab';
 import AlimentacionNutrigenomicaTab from '@/components/UI/AlimentacionNutrigenomicaTab';
 

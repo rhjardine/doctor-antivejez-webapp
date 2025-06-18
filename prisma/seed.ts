@@ -1,24 +1,14 @@
-// prisma/seed.ts
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 // Mapeo de los rangos de edad del sistema antiguo (1-14)
-const ageRangeMap = {
-  1: { min_age: 21, max_age: 28 },
-  2: { min_age: 28, max_age: 35 },
-  3: { min_age: 35, max_age: 42 },
-  4: { min_age: 42, max_age: 49 },
-  5: { min_age: 49, max_age: 56 },
-  6: { min_age: 56, max_age: 63 },
-  7: { min_age: 63, max_age: 70 },
-  8: { min_age: 70, max_age: 77 },
-  9: { min_age: 77, max_age: 84 },
-  10: { min_age: 84, max_age: 91 },
-  11: { min_age: 91, max_age: 98 },
-  12: { min_age: 98, max_age: 105 },
-  13: { min_age: 105, max_age: 112 },
-  14: { min_age: 112, max_age: 120 }
+const ageRangeMap: { [key: number]: { min_age: number; max_age: number } } = {
+    1: { min_age: 21, max_age: 28 }, 2: { min_age: 28, max_age: 35 }, 3: { min_age: 35, max_age: 42 },
+    4: { min_age: 42, max_age: 49 }, 5: { min_age: 49, max_age: 56 }, 6: { min_age: 56, max_age: 63 },
+    7: { min_age: 63, max_age: 70 }, 8: { min_age: 70, max_age: 77 }, 9: { min_age: 77, max_age: 84 },
+    10: { min_age: 84, max_age: 91 }, 11: { min_age: 91, max_age: 98 }, 12: { min_age: 98, max_age: 105 },
+    13: { min_age: 105, max_age: 112 }, 14: { min_age: 112, max_age: 120 },
 };
 
 // **TODOS los datos del seeder PHP, transcritos y consolidados en un solo array**
@@ -234,69 +224,75 @@ const oldBaremData = [
 ];
 
 async function main() {
-  console.log('Iniciando el proceso de "seeding" con datos completos...');
+  console.log('🌱 Iniciando el proceso de "seeding" con datos completos...');
+
   await prisma.range.deleteMany({});
   await prisma.board.deleteMany({});
-  console.log('Tablas de baremos limpiadas.');
-  console.log('Creando los "Boards" (tipos de test)...');
+  console.log('🗑️ Tablas de baremos limpiadas.');
+
+  console.log('📊 Creando los "Boards" (tipos de test)...');
   const boardsToCreate = [
-    { name: 'fat', description: '% Grasa Corporal', inverse: false },
-    { name: 'imc', description: 'Índice de Masa Corporal', inverse: false },
-    { name: 'digital_reflex', description: 'Reflejos Digitales (ms)', inverse: true },
-    { name: 'visual_accommodation', description: 'Acomodación Visual (cm)', inverse: true },
-    { name: 'static_balance', description: 'Balance Estático (segundos)', inverse: false },
-    { name: 'skin_hydration', description: 'Hidratación Cutánea (seg)', inverse: true },
-    { name: 'systolic', description: 'Tensión Arterial Sistólica (mmHg)', inverse: false },
-    { name: 'diastolic', description: 'Tensión Arterial Diastólica (mmHg)', inverse: false },
+      { name: 'fat', description: '% Grasa Corporal', inverse: true },
+      { name: 'imc', description: 'Índice de Masa Corporal', inverse: true },
+      { name: 'digital_reflex', description: 'Reflejos Digitales (ms)', inverse: true },
+      { name: 'visual_accommodation', description: 'Acomodación Visual (cm)', inverse: true },
+      { name: 'static_balance', description: 'Balance Estático (segundos)', inverse: false },
+      { name: 'skin_hydration', description: 'Hidratación Cutánea (seg)', inverse: true },
+      { name: 'systolic', description: 'Tensión Arterial Sistólica (mmHg)', inverse: true },
+      { name: 'diastolic', description: 'Tensión Arterial Diastólica (mmHg)', inverse: true },
   ];
   await prisma.board.createMany({ data: boardsToCreate });
   const allBoards = await prisma.board.findMany();
-  const boardIdMap = new Map(allBoards.map((bb) => [bb.name, bb.id]));
-  console.log(`${allBoards.length} Boards creados.`);
-  console.log('Preparando y traduciendo los "Ranges" (baremos)...');
+  const boardIdMap = new Map(allBoards.map(b => [b.name, b.id]));
+  console.log(`✅ ${allBoards.length} Boards creados.`);
+
+  console.log('📏 Preparando y traduciendo los "Ranges" (baremos)...');
   const rangesToCreate = [];
+
   for (const oldData of oldBaremData) {
-    const ageRange = ageRangeMap[oldData.r];
-    if (!ageRange) continue;
-    let boardName = '';
-    let gender = '';
-    let is_athlete = false;
-    if (oldData.n.includes('male')) gender = 'Masculino';
-    if (oldData.n.includes('female')) gender = 'Femenino';
-    if (oldData.n.includes('sporty')) is_athlete = true;
-    // Mapeo del nombre del test al nombre del board
-    if (oldData.n.includes('fat')) boardName = 'fat';
-    else if (oldData.n.includes('mass')) boardName = 'imc';
-    else if (oldData.n.includes('reflection')) boardName = 'digital_reflex';
-    else if (oldData.n.includes('accommodation')) boardName = 'visual_accommodation';
-    else if (oldData.n.includes('balance')) boardName = 'static_balance';
-    else if (oldData.n.includes('hydration')) boardName = 'skin_hydration';
-    else if (oldData.n.includes('systolic')) boardName = 'systolic';
-    else if (oldData.n.includes('diastolic')) boardName = 'diastolic';
-    const boardId = boardIdMap.get(boardName);
-    if (!boardId) continue;
-    rangesToCreate.push({
-      boardId: boardId,
-      min_age: ageRange.min_age,
-      max_age: ageRange.max_age,
-      gender: gender,
-      is_athlete: is_athlete,
-      min_value: Number(oldData.min),
-      max_value: Number(oldData.max),
-      bio_age_min: ageRange.min_age,
-      bio_age_max: ageRange.max_age,
-    });
+      const ageRange = ageRangeMap[oldData.r as keyof typeof ageRangeMap];
+      if (!ageRange) continue;
+
+      let boardName = '';
+      if (oldData.n.includes('fat')) boardName = 'fat';
+      else if (oldData.n.includes('mass')) boardName = 'imc';
+      else if (oldData.n.includes('reflection')) boardName = 'digital_reflex';
+      else if (oldData.n.includes('accommodation')) boardName = 'visual_accommodation';
+      else if (oldData.n.includes('balance')) boardName = 'static_balance';
+      else if (oldData.n.includes('hydration')) boardName = 'skin_hydration';
+      else if (oldData.n.includes('systolic')) boardName = 'systolic';
+      else if (oldData.n.includes('diastolic')) boardName = 'diastolic';
+
+      const boardId = boardIdMap.get(boardName);
+      if (!boardId) continue;
+      
+      // ===================================================================
+      // ESTA ES LA ÚNICA PARTE QUE DEBES CORREGIR:
+      // Asegúrate de que los campos 'bio_age_min' y 'bio_age_max' NO estén aquí.
+      rangesToCreate.push({
+          boardId: boardId,
+          min_age: ageRange.min_age,
+          max_age: ageRange.max_age,
+          gender: oldData.n.includes('female') ? 'Femenino' : 'Masculino',
+          is_athlete: oldData.n.includes('sporty'),
+          min_value: Number(oldData.min),
+          max_value: Number(oldData.max),
+      });
+      // ===================================================================
   }
-  await prisma.range.createMany({ data: rangesToCreate });
-  console.log(`${rangesToCreate.length} Ranges creados.`);
-  console.log('¡Proceso de "seeding" completado exitosamente!');
+
+  await prisma.range.createMany({
+      data: rangesToCreate,
+  });
+  console.log(`✅ ${rangesToCreate.length} Ranges creados.`);
+
+  console.log('🎉 ¡Proceso de "seeding" completado exitosamente!');
 }
 
 main()
   .catch((e) => {
-    console.error('Error durante el proceso de seeding:', e);
-    process.exit(1);
+      console.error('❌ Error durante el proceso de seeding:', e);
+      process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
-  });
+      await prisma.$disconnect();
